@@ -27,6 +27,7 @@ import keboola.mailkit.extractor.mailkitapi.MailkitXmlRpcAPIClient;
 import keboola.mailkit.extractor.mailkitapi.XmlRpcCampaignListResponse;
 import keboola.mailkit.extractor.mailkitapi.requests.CampaignListXmlRpc;
 import keboola.mailkit.extractor.mailkitapi.requests.MailkitJsonRequest;
+import keboola.mailkit.extractor.mailkitapi.requests.MailkitRequest;
 import keboola.mailkit.extractor.mailkitapi.requests.MailkitXmlRpcRequest;
 import keboola.mailkit.extractor.mailkitapi.requests.MsgBounces;
 import keboola.mailkit.extractor.mailkitapi.requests.MsgFeedback;
@@ -118,10 +119,7 @@ public class Extractor {
                 MailkitXmlRpcRequest rq = new CampaignListXmlRpc(null);
 
                 res = (XmlRpcCampaignListResponse) xmlClient.executeRequest(rq);
-                if (res.isError()) {
-                    System.err.println(res.getErrorMessage());
-                    System.exit(1);
-                }
+                checkResponseStatus(res, rq);
 
             } catch (ClientException ex) {
                 System.err.println(ex.getMessage());
@@ -177,10 +175,7 @@ public class Extractor {
                 System.out.println("Downloading summary report.");
                 jsonRq = new Report(config.getParams().getDateFrom(), config.getParams().getDateTo());
                 jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq);
-                if (jsResp.isError()) {
-                    System.err.println(jsResp.getErrorMessage());
-                    System.exit(1);
-                }
+                checkResponseStatus(jsResp, jsonRq);
                 /*process REPORT*/
                 try {
                     campaignIds = jc.convert(jsResp.getFilePath(), outTablesPath + File.separator + "summaryReport.csv", "ID_MESSAGE");
@@ -340,7 +335,7 @@ public class Extractor {
         System.out.println("Download completed successfuly..");
     }
 
-    private static boolean checkResponseStatus(MailkitResponse res, MailkitJsonRequest rq) {
+    private static boolean checkResponseStatus(MailkitResponse res, MailkitRequest rq) {
         if (res.isError()) {
             String err = "";
             if (res.getErrorMessage().equalsIgnoreCase("Unauthorized")) {
