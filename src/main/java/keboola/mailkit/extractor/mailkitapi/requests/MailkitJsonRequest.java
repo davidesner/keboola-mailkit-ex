@@ -25,7 +25,7 @@ public abstract class MailkitJsonRequest implements MailkitRequest {
     private String client_id;
     @JsonProperty("md5")
     private String client_md5;
-    private final Map<String, String> parameters;
+    private final Map<String, Object> parameters;
 
     public MailkitJsonRequest(String function) {
         this.function = function;
@@ -74,7 +74,8 @@ public abstract class MailkitJsonRequest implements MailkitRequest {
         this.client_md5 = client_md5;
     }
 
-    public Map<String, String> getParameters() {
+    @Override
+    public Map<String, Object> getParameters() {
         return parameters;
     }
 

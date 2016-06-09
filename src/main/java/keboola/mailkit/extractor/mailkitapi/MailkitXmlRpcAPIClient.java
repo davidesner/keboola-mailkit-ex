@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import keboola.mailkit.extractor.mailkitapi.requests.MailkitRequest;
 import keboola.mailkit.extractor.mailkitapi.requests.MailkitXmlRpcRequest;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
@@ -27,7 +28,7 @@ import org.xml.sax.SAXException;
  * @author David Esner <esnerda at gmail.com>
  * @created 2016
  */
-public class MailkitXmlRpcAPIClient {
+public class MailkitXmlRpcAPIClient implements MailkitClient {
 
     private static final String ENDPOINT_URL = "https://api.mailkit.eu/rpc.fcgi";
 
@@ -67,7 +68,7 @@ public class MailkitXmlRpcAPIClient {
      * @return returns MailkitResponse object
      * @throws ClientException
      */
-    public MailkitResponse executeRequest(MailkitXmlRpcRequest req) throws ClientException {
+    public MailkitResponse executeRequest(MailkitRequest req) throws ClientException {
 
         //build request
         List<Object> params = new ArrayList();
@@ -75,7 +76,7 @@ public class MailkitXmlRpcAPIClient {
         params.add(client_id);
         params.add(client_md5);
         //add custom parameters
-        params.addAll(req.getParameters());
+        params.addAll(req.getParameters().values());
         Object result;
         MailkitResponse xmlResp = null;
         try {

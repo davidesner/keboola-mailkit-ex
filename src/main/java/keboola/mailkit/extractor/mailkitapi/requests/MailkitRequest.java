@@ -2,6 +2,8 @@
  */
 package keboola.mailkit.extractor.mailkitapi.requests;
 
+import java.util.Map;
+
 /**
  * Contract for MailkitRequest objects
  *
@@ -21,5 +23,9 @@ public interface MailkitRequest {
     public void setClient_md5(String client_md5);
 
     public String getFunctionCall();
+
+    public String getFunction();
+
+    public Map<String, Object> getParameters();
 
 }

@@ -111,6 +111,7 @@ public class Extractor {
 
         //get campaign list via xml rpc endpoint if requested
         if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.CAMPAIGNS.name())) {
+            System.out.println("Downloading campaigns.");
             XmlRpcCampaignListResponse res = null;
             try {
                 MailkitXmlRpcAPIClient xmlClient = new MailkitXmlRpcAPIClient(config.getParams().getClientId(), config.getParams().getClientMd5());
@@ -173,6 +174,7 @@ public class Extractor {
         /*Get REPORT dataset */
         try {
             if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.REPORT.name())) {
+                System.out.println("Downloading summary report.");
                 jsonRq = new Report(config.getParams().getDateFrom(), config.getParams().getDateTo());
                 jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq);
                 if (jsResp.isError()) {
@@ -197,6 +199,7 @@ public class Extractor {
             Map<String, String> keyCols = new HashMap<>();
             boolean append = false;
 
+            System.out.println("Downloading campaign report.");
             for (String cId : campaignIds) {
                 Thread.sleep(REQUEST_WAIT_INTERVAL);
                 jsonRq = new ReportCampaign(config.getParams().getDateFrom(), config.getParams().getDateTo(), cId);
@@ -212,7 +215,7 @@ public class Extractor {
             /*Get data for all messages*/
             List<String> linkIds;
             boolean firstRun = true;
-
+            System.out.println("Downloading campaign send reports.");
             for (String sId : sendIds) {
 
                 if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_BOUNCES.name())) {
@@ -334,7 +337,7 @@ public class Extractor {
         } catch (IOException ex) {
             System.err.println("Unable to write state file");
         }
-
+        System.out.println("Download completed successfuly..");
     }
 
     private static boolean checkResponseStatus(MailkitResponse res, MailkitJsonRequest rq) {

@@ -4,7 +4,9 @@ package keboola.mailkit.extractor.mailkitapi.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -19,17 +21,16 @@ public abstract class MailkitXmlRpcRequest implements MailkitRequest {
     private String client_id;
     @JsonProperty("md5")
     private String client_md5;
-    private final List<Object> parameters;
+    private final Map<String, Object> parameters;
 
     public MailkitXmlRpcRequest(String function) {
         this.function = function;
 
-        this.parameters = new ArrayList<>();
+        this.parameters = new HashMap<>();
     }
 
-    public final void addParameter(Object value) {
-
-        this.parameters.add(value);
+    public final void addParameter(String key, Object value) {
+        this.parameters.put(key, value);
     }
 
     @Override
@@ -61,7 +62,7 @@ public abstract class MailkitXmlRpcRequest implements MailkitRequest {
         this.client_md5 = client_md5;
     }
 
-    public List<Object> getParameters() {
+    public Map<String, Object> getParameters() {
         return parameters;
     }
 

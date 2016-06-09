@@ -35,7 +35,7 @@ import org.apache.http.util.EntityUtils;
  * @author David Esner <esnerda at gmail.com>
  * @created 2016
  */
-public class MailkitJsonAPIClient {
+public class MailkitJsonAPIClient implements MailkitClient {
 
     private static final String ENDPOINT_URL = "https://api.mailkit.eu/json.fcgi";
 
@@ -76,7 +76,7 @@ public class MailkitJsonAPIClient {
      * interface
      * @throws ClientException
      */
-    public MailkitResponse executeRequest(MailkitJsonRequest req) throws ClientException {
+    public MailkitResponse executeRequest(MailkitRequest req) throws ClientException {
 
         //set credentials header in request
         req.setClient_id(client_id);

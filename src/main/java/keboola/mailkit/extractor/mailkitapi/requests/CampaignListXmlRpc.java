@@ -12,7 +12,7 @@ public class CampaignListXmlRpc extends MailkitXmlRpcRequest {
     public CampaignListXmlRpc(String campaignId) {
         super("mailkit.campaigns.list");
         if (campaignId != null) {
-            this.addParameter(campaignId);
+            this.addParameter("ID_message", campaignId);
         }
 
     }
@@ -20,7 +20,7 @@ public class CampaignListXmlRpc extends MailkitXmlRpcRequest {
     @Override
     public String getFunctionCall() {
         String m = this.getFunction() + " with parameters:";
-        for (Object par : this.getParameters()) {
+        for (Object par : this.getParameters().values()) {
             m += "\n" + par + ", " + par;
         }
         return m;
