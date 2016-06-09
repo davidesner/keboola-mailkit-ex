@@ -77,10 +77,12 @@ public class KBCParameters {
         //set range
         if (period != null) {
 
-            setDateFrom(Instant.now());
-            setDateTo(Instant.now().minus(Long.valueOf(period), ChronoUnit.DAYS));
+            setDateTo(Instant.now());
+            setDateFrom(Instant.now().minus(Long.valueOf(period), ChronoUnit.DAYS));
         } else {
-            if (dateFrom == null || dateFrom.equals("")) {
+            if (dateFrom.equals("")) {
+                this.dateFrom = null;
+            } else {
                 this.dateFrom = dateFrom;
             }
 

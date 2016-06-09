@@ -1,0 +1,65 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Ares extractor KBC configuration",
+    "description": "Ares extractor KBC configuration",
+    "type": "object",
+    "properties": {
+        "clientId": {
+            "type": "string",
+            "description": "Mailkit client ID"
+        },
+        "#clientMd5": {
+            "type": "string",
+            "description": "Mailkit client MD5 hash"
+        },
+        "daysPeriod": {
+            "type": ["integer", "null"],
+            "description": "Sets the range period as number of days from now."
+        },
+        "dateFrom": {
+            "type": ["string", "null"],
+            "description": "Sets range period of returned data. Start date in format YYYY-MM-DD"
+        },
+        "dateTo": {
+            "type": ["string", "null"],
+            "description": "Sets range period of returned data. End date in format YYYY-MM-DD"
+        },
+        "campaignIds": {
+            "description": "Campaign ids to download.",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "datasets": {
+            "description": "List of datasets to download.",
+            "type": "array",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "ALL",
+                    "CAMPAIGNS",
+                    "REPORT",
+                    "REPORT_CAMPAIGN",
+                    "REPORT_MSG",
+                    "MSG_RECIPIENTS",
+                    "MSG_FEEDBACK",
+                    "MSG_LINKS",
+                    "LINKS_VISITORS",
+                    "MSG_BOUNCES"
+                ]
+            },
+            "default": "ALL",
+            "minItems": 0,
+            "uniqueItems": true
+        },
+        "sinceLastRun": {
+            "type": "boolean",
+            "description": "Overrides the period parameters and returns data in period since the last run of component."
+        }
+    },
+    "required": [
+        "clientId", "#clientMd5", "datasets", "sinceLastRun"
+    ]
+}
+
