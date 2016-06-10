@@ -1,3 +1,10 @@
 {
-        "bucket": "in.c-test"    
+    "clientId": "12345",
+    "#clientMd5": "123456789",
+    "dateTo": "",
+    "dateFrom": "2016-01-01",
+    "daysPeriod": null,
+    "datasets": ["CAMPAIGNS", "REPORT_MSG"],
+    "campaignIds": [],
+    "sinceLastRun": false
 }
