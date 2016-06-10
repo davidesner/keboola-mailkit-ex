@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "Mailkit KBC configuration",
+    "title": "Mailkit extractor KBC configuration",
     "type": "object",
     "properties": {
         "clientId": {
