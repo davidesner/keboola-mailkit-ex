@@ -102,10 +102,18 @@ public class Extractor {
         /*Set period from previous state*/
         if (config.getParams().isSinceLastRun()) {
             try {
-                config.getParams().setDateFrom(lastState.getLastRunDate());
+                if (lastState.getLastRunDate() == null) {
+                    System.out.println("Empty state file, first run?");
+                    config.getParams().setDateFrom(config.getParams().getDateFrom());
+                } else {
+                    config.getParams().setDateFrom(lastState.getLastRunDate());
+                }
                 config.getParams().setDateTo(Instant.now());
             } catch (ParseException ex) {
                 System.err.println("Unable to set date from statefile!");
+            } catch (RuntimeException re) {
+                re.printStackTrace();
+                System.exit(1);
             }
         }
 
@@ -148,10 +156,10 @@ public class Extractor {
                 }
             } catch (IOException ex) {
                 System.err.println(ex.getMessage());
-                System.exit(2);
+                System.exit(1);
             } catch (RuntimeException re) {
                 re.printStackTrace();
-                System.exit(2);
+                System.exit(1);
             } finally {
                 try {
                     mapWriter.close();
