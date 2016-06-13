@@ -3,7 +3,7 @@ Mailkit extractor docker component for Keboola Connection.
 
 ##Funcionality
 
-The component allows retrieving all datasets provided by Mailkit Statistics API along with list of all available campaigns. 
+The component allows retrieving all datasets provided by Mailkit Reporting API along with list of all available campaigns. 
 
 **List of supported datasets:**
 
