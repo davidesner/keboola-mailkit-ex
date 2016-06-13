@@ -20,26 +20,26 @@ The component allows retrieving all datasets provided by Mailkit Statistics API 
 
 - **REPORT_MSG**
     - Statistics about messages sent within campaigns
-    [mailkit.report.message](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportmessage/)
+    ([mailkit.report.message](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportmessage/))
 
 - **MSG_RECIPIENTS**
     - Statistics about message recipients
     ([mailkit.report.message.recipients](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportmessagerecipients/))
 
 - **MSG_FEEDBACK**
-    - Campaign messages feedback. Returns data on default DAILY aggregation level. ([mailkit.report.message,feedback](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportmessagefeedback/))
+    - Campaign messages feedback. Returns data on default DAILY aggregation level. ([mailkit.report.message.feedback](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportmessagefeedback/))
 
 - **MSG_BOUNCES**
     - List of undelivered messages.
-      ([mailkit.report.message,bounces](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportmessagebounces/))
+    ([mailkit.report.message.bounces](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportmessagebounces/))
 
 - **MSG_LINKS**
     - Links performance report for each campaign message. 
-    ([mailkit.report.message,links](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportmessagelinks/))
+    ([mailkit.report.message.links](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportmessagelinks/))
 
 - **LINKS_VISITORS**
     - List of visitors who interacted with message links.
-      [mailkit.report.message,links.visitors](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportmessagelinksvisitors/)
+      ([mailkit.report.message.links.visitors](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportmessagelinksvisitors/))
 
 **NOTE:** Due to the current API architecture, the application might generate large number of API requests, especially when retrieving data within long time periods. For example to retrieve datasets `LINKS` and `LINKS_VISITORS` for all campaigns the app generates API request for each campaign to retrieve messages, then for each message to retrieve links and then for each link to retrieve link_visitors dataset. Currently there is an interval of 1s between each API request. Therefore, the app run times may be very long (e.g. 2 hours). So please keep that in mind. 
 ##Configuration
