@@ -2,12 +2,16 @@
  */
 package keboola.mailkit.extractor.mailkitapi;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -46,6 +50,7 @@ public class MailkitJsonAPIClient implements MailkitClient {
     private final String persistFolderPath;
     private final String client_id;
     private final String client_md5;
+    private File logFile;
 
     /**
      * Mailkit Json Api client
@@ -76,7 +81,8 @@ public class MailkitJsonAPIClient implements MailkitClient {
      * interface
      * @throws ClientException
      */
-    public MailkitResponse executeRequest(MailkitRequest req) throws ClientException {
+    @Override
+    public MailkitResponse executeRequest(MailkitRequest req, boolean log) throws ClientException {
 
         //set credentials header in request
         req.setClient_id(client_id);
@@ -103,6 +109,8 @@ public class MailkitJsonAPIClient implements MailkitClient {
         if (statusCode >= 300) {
             if (statusCode != 404) {
                 throw new ClientException("API error executing function:" + req.getFunctionCall() + ". \n Http Response code:" + statusCode + " - " + response.getStatusLine().getReasonPhrase());
+            } else {
+
             }
         }
 
@@ -160,9 +168,56 @@ public class MailkitJsonAPIClient implements MailkitClient {
             }
 
         }
+        if (log) {
+            FileInputStream fis = null;
+            BufferedWriter out = null;
+            try {
+                File fin = new File(resTmpFilePath);
+                fis = new FileInputStream(fin);
+                BufferedReader in = new BufferedReader(new InputStreamReader(fis));
+                FileWriter fs = new FileWriter(logFile, true);
+                out = new BufferedWriter(fs);
+                //write request
+                out.write("Request:");
+                out.newLine();
+                out.write(req.getStringRepresentation());
+                //write response
+                out.newLine();
+                out.write("Response:");
+                out.newLine();
+                String aLine = null;
+                while ((aLine = in.readLine()) != null) {
+                    //Process each line and add output to Dest.txt file
+                    out.write(aLine);
+                    out.newLine();
+                }
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(MailkitJsonAPIClient.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(MailkitJsonAPIClient.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(MailkitJsonAPIClient.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                try {
+                    fis.close();
+                    out.close();
+                } catch (Exception ex) {
+                    Logger.getLogger(MailkitJsonAPIClient.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
 
         return new MailkitJsonResponse(resTmpFilePath, shortResp, req.getFunction());
 
+    }
+
+    public void setLogFile(String path) {
+        try {
+            this.logFile = new File(path);
+            logFile.createNewFile();
+        } catch (IOException ex) {
+            Logger.getLogger(MailkitJsonAPIClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

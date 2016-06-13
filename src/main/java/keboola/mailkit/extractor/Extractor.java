@@ -53,7 +53,9 @@ import org.supercsv.prefs.CsvPreference;
  */
 public class Extractor {
 
-    private final static int REQUEST_WAIT_INTERVAL = 1000;
+    private final static int REQUEST_WAIT_INTERVAL = 0;
+    private final static boolean LOG = false;
+    private final static String logName = "log.txt";
 
     public static void main(String[] args) {
 
@@ -125,7 +127,7 @@ public class Extractor {
                 MailkitXmlRpcAPIClient xmlClient = new MailkitXmlRpcAPIClient(config.getParams().getClientId(), config.getParams().getClientMd5());
                 MailkitXmlRpcRequest rq = new CampaignListXmlRpc(null);
 
-                res = (XmlRpcCampaignListResponse) xmlClient.executeRequest(rq);
+                res = (XmlRpcCampaignListResponse) xmlClient.executeRequest(rq, LOG);
                 checkResponseStatus(res, rq);
 
             } catch (ClientException ex) {
@@ -175,13 +177,15 @@ public class Extractor {
         MailkitJsonRequest jsonRq;
         JsonToCsvConvertor jc = new JsonToCsvConvertor();
         MailkitJsonAPIClient jsonClient = new MailkitJsonAPIClient(config.getParams().getClientId(), config.getParams().getClientMd5(), dataPath + File.separator + "tmp");
-
+        if (LOG) {
+            jsonClient.setLogFile(dataPath + File.separator + logName);
+        }
         /*Get REPORT dataset */
         try {
             if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.REPORT.name())) {
                 System.out.println("Downloading summary report.");
                 jsonRq = new Report(config.getParams().getDateFrom(), config.getParams().getDateTo());
-                jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq);
+                jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
                 checkResponseStatus(jsResp, jsonRq);
                 /*process REPORT*/
                 try {
@@ -205,7 +209,7 @@ public class Extractor {
             for (String cId : campaignIds) {
                 Thread.sleep(REQUEST_WAIT_INTERVAL);
                 jsonRq = new ReportCampaign(config.getParams().getDateFrom(), config.getParams().getDateTo(), cId);
-                jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq);
+                jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
                 if (!checkResponseStatus(jsResp, jsonRq)) {
                     continue;
                 }
@@ -225,7 +229,7 @@ public class Extractor {
                 if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_BOUNCES.name())) {
                     Thread.sleep(REQUEST_WAIT_INTERVAL);
                     jsonRq = new MsgBounces(sId);
-                    jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq);
+                    jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
                     if (!checkResponseStatus(jsResp, jsonRq)) {
                         continue;
                     }
@@ -239,7 +243,7 @@ public class Extractor {
                 if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_FEEDBACK.name())) {
                     Thread.sleep(REQUEST_WAIT_INTERVAL);
                     jsonRq = new MsgFeedback(sId, null);
-                    jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq);
+                    jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
                     if (!checkResponseStatus(jsResp, jsonRq)) {
                         continue;
                     }
@@ -253,7 +257,7 @@ public class Extractor {
                 if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_RECIPIENTS.name())) {
                     Thread.sleep(REQUEST_WAIT_INTERVAL);
                     jsonRq = new MsgRecipients(sId);
-                    jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq);
+                    jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
                     if (!checkResponseStatus(jsResp, jsonRq)) {
                         continue;
                     }
@@ -267,7 +271,7 @@ public class Extractor {
                 if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.REPORT_MSG.name())) {
                     Thread.sleep(REQUEST_WAIT_INTERVAL);
                     jsonRq = new ReportMessage(sId);
-                    jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq);
+                    jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
                     if (!checkResponseStatus(jsResp, jsonRq)) {
                         continue;
                     }
@@ -281,7 +285,7 @@ public class Extractor {
                 if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_LINKS.name())) {
                     Thread.sleep(REQUEST_WAIT_INTERVAL);
                     jsonRq = new MsgLinks(sId);
-                    jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq);
+                    jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
                     checkResponseStatus(jsResp, jsonRq);
                     keyCols.clear();
                     keyCols.put("ID_SEND", sId);
@@ -294,7 +298,7 @@ public class Extractor {
                         for (String urlId : linkIds) {
                             Thread.sleep(REQUEST_WAIT_INTERVAL);
                             jsonRq = new MsgLinksVisitors(sId, urlId);
-                            jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq);
+                            jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
                             if (!checkResponseStatus(jsResp, jsonRq)) {
                                 continue;
                             }

@@ -68,7 +68,7 @@ public class MailkitXmlRpcAPIClient implements MailkitClient {
      * @return returns MailkitResponse object
      * @throws ClientException
      */
-    public MailkitResponse executeRequest(MailkitRequest req) throws ClientException {
+    public MailkitResponse executeRequest(MailkitRequest req, boolean log) throws ClientException {
 
         //build request
         List<Object> params = new ArrayList();

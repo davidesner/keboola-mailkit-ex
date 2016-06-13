@@ -80,6 +80,7 @@ public abstract class MailkitJsonRequest implements MailkitRequest {
     }
 
     @Override
+    @JsonIgnore
     public final String getFunctionCall() {
         String m = this.getFunction() + " with parameters:";
         for (Map.Entry entry : this.getParameters().entrySet()) {

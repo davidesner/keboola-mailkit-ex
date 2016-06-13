@@ -11,5 +11,5 @@ import keboola.mailkit.extractor.mailkitapi.requests.MailkitRequest;
  */
 public interface MailkitClient {
 
-    public MailkitResponse executeRequest(MailkitRequest rq) throws ClientException;
+    public MailkitResponse executeRequest(MailkitRequest rq, boolean log) throws ClientException;
 }
