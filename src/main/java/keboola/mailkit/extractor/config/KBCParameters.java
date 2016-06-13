@@ -117,7 +117,7 @@ public class KBCParameters {
             }
         }
 
-        if (datasets != null && !datasets.contains("LINKS_VISITORS")) {
+        if (datasets != null && datasets.contains("LINKS_VISITORS")) {
             this.datasets.add("MSG_LINKS");
         }
         //set param map
