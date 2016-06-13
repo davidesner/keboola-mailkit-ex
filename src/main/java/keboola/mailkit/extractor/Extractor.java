@@ -53,7 +53,7 @@ import org.supercsv.prefs.CsvPreference;
  */
 public class Extractor {
 
-    private final static int REQUEST_WAIT_INTERVAL = 1000;
+    private final static int REQUEST_WAIT_INTERVAL = 0;
 
     public static void main(String[] args) {
 
