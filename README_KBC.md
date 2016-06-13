@@ -76,5 +76,5 @@ Downloads ALL datasets and includes data since 1 of May 2016 until now on first 
 
 ###Use case 3
 Downloads ALL datasets and includes data for last 30 days only for campaign with ID `4321`. 
-Note that datasets `REPORT` and `REPORT_CAMPAIGN` will contain all campaigns in given period, the `campaignIds` parameter only applies to message report data.
+Note that datasets `REPORT` will always contain all campaigns in given period, the `campaignIds` parameter only applies to message report data.
 ![](https://raw.githubusercontent.com/davidesner/keboola-mailkit-ex/master/img/use_case3.png)
