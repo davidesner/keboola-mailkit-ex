@@ -347,7 +347,7 @@ public class Extractor {
                 for (Map.Entry entry : rq.getParameters().entrySet()) {
                     err += "\n" + entry.getKey() + ", " + entry.getValue();
                 }
-                System.err.println(err);
+                System.out.println(err);
                 return false;
             }
         }
