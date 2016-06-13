@@ -14,7 +14,7 @@ The component allows retrieving all datasets provided by Mailkit Statistics API 
 - **REPORT**
     - Basic campaign summary report.
       ([mailkit.report](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreport/))
-- **REPORT_CAMPAIGN **
+- **REPORT_CAMPAIGN**
     - Reports for specific campaigns.
      ([mailkit.report.campaign](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportcampaign/))
 
@@ -22,7 +22,7 @@ The component allows retrieving all datasets provided by Mailkit Statistics API 
     - Statistics about messages sent within campaigns
     [mailkit.report.message](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportmessage/)
 
-- **MSG_RECIPIENTS **
+- **MSG_RECIPIENTS**
     - Statistics about message recipients
     ([mailkit.report.message.recipients](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportmessagerecipients/))
 
