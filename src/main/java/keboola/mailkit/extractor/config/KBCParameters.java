@@ -74,6 +74,7 @@ public class KBCParameters {
         this.clientId = clientId;
         this.clientMd5 = clientMd5;
         this.sinceLastRun = sinceLastRun;
+        this.campaignIds = campaignIds;
         //set range
         if (period != null) {
 
@@ -116,6 +117,9 @@ public class KBCParameters {
             }
         }
 
+        if (datasets != null && !datasets.contains("LINKS_VISITORS")) {
+            this.datasets.add("MSG_LINKS");
+        }
         //set param map
         parametersMap.put("clientId", clientId);
         parametersMap.put("clientMd5", clientMd5);

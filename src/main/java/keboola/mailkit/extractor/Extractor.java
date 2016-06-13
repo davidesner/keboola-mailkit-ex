@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -199,7 +198,9 @@ public class Extractor {
                 Thread.sleep(REQUEST_WAIT_INTERVAL);
                 jsonRq = new ReportCampaign(config.getParams().getDateFrom(), config.getParams().getDateTo(), cId);
                 jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq);
-                checkResponseStatus(jsResp, jsonRq);
+                if (!checkResponseStatus(jsResp, jsonRq)) {
+                    continue;
+                }
                 keyCols.clear();
                 keyCols.put("ID_MESSAGE", cId);
                 append = i > 0;
@@ -266,7 +267,7 @@ public class Extractor {
                     keyCols.put("ID_SEND", sId);
                     append = !firstRun;
                     String resPath = outTablesPath + File.separator + "messageReport.csv";
-                    jc.singleJsonObjectToCsv(jsResp.getFilePath(), resPath, append);
+                    jc.singleJsonObjectToCsv(jsResp.getFilePath(), resPath, keyCols, append);
                 }
 
                 if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_LINKS.name())) {
@@ -293,7 +294,7 @@ public class Extractor {
                             keyCols.put("ID_SEND", sId);
                             keyCols.put("ID_URL", urlId);
                             append = !firstRun;
-                            resPath = outTablesPath + File.separator + "links.csv";
+                            resPath = outTablesPath + File.separator + "linksVisitors.csv";
                             jc.convertAndAdd(jsResp.getFilePath(), resPath, keyCols, append, "ID_URL");
                         }
                     }
