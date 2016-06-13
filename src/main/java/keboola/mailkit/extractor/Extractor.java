@@ -53,7 +53,7 @@ import org.supercsv.prefs.CsvPreference;
  */
 public class Extractor {
 
-    private final static int REQUEST_WAIT_INTERVAL = 0;
+    private final static int REQUEST_WAIT_INTERVAL = 1000;
 
     public static void main(String[] args) {
 
@@ -351,7 +351,7 @@ public class Extractor {
                 System.err.println("Unauthorized. Check credentials.");
                 System.exit(1);
             } else {
-                err = res.getErrorMessage() + "\nWARNING: Call failed with parameter: ";
+                err = "WARNING:" + res.getErrorMessage() + "\n Call failed with parameter: ";
                 for (Map.Entry entry : rq.getParameters().entrySet()) {
                     err += "\n" + entry.getKey() + ", " + entry.getValue();
                 }
