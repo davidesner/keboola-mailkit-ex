@@ -96,6 +96,7 @@ public class Extractor {
             try {
                 lastState = (LastState) JsonConfigParser.parseFile(stateFile, LastState.class);
             } catch (IOException ex) {
+                lastState = new LastState(Instant.now());
                 System.err.println("Unable to parse state file!");
             }
         } else {
@@ -104,11 +105,12 @@ public class Extractor {
         /*Set period from previous state*/
         if (config.getParams().isSinceLastRun()) {
             try {
-                if (lastState != null && lastState.getLastRunDate() == null) {
+                if (lastState.getLastRunDate() == null) {
+                    lastState = new LastState(Instant.now());
                     System.out.println("Empty state file, first run?");
                     config.getParams().setDateFrom(config.getParams().getDateFrom());
                 } else {
-                    lastState = new LastState(Instant.now());
+                    config.getParams().setDateFrom(lastState.getLastRunDate());
                 }
                 config.getParams().setDateTo(Instant.now());
             } catch (ParseException ex) {
@@ -118,9 +120,10 @@ public class Extractor {
                 System.exit(1);
             }
         }
-
+        System.out.println("Download started with range parameters: dateFrom:" + config.getParams().getDateFrom() + ", dateTo:" + config.getParams().getDateTo());
         //get campaign list via xml rpc endpoint if requested
         if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.CAMPAIGNS.name())) {
+
             System.out.println("Downloading campaigns.");
             XmlRpcCampaignListResponse res = null;
             try {
