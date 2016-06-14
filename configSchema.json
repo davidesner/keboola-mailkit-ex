@@ -9,7 +9,7 @@
             "description": "Mailkit client ID"
         },
         "#clientMd5": {
-            "title": "Client md5",
+            "title": "Client MD5",
             "type": "string",
             "description": "Mailkit client MD5 hash"
         },
