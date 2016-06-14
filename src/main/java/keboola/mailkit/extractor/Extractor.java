@@ -104,11 +104,11 @@ public class Extractor {
         /*Set period from previous state*/
         if (config.getParams().isSinceLastRun()) {
             try {
-                if (lastState.getLastRunDate() == null) {
+                if (lastState != null && lastState.getLastRunDate() == null) {
                     System.out.println("Empty state file, first run?");
                     config.getParams().setDateFrom(config.getParams().getDateFrom());
                 } else {
-                    config.getParams().setDateFrom(lastState.getLastRunDate());
+                    lastState = new LastState(Instant.now());
                 }
                 config.getParams().setDateTo(Instant.now());
             } catch (ParseException ex) {
