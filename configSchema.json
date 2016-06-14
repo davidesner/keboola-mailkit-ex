@@ -4,26 +4,35 @@
     "type": "object",
     "properties": {
         "clientId": {
+            "title": "Client ID",
             "type": "string",
             "description": "Mailkit client ID"
         },
         "#clientMd5": {
+            "title": "Client md5",
             "type": "string",
             "description": "Mailkit client MD5 hash"
         },
         "daysPeriod": {
+            "title": "Days Period",
             "type": ["integer", "null"],
-            "description": "Sets the range period as number of days from now."
+            "description": "Sets the range period as number of days from now.",
+            "default": null
         },
         "dateFrom": {
+            "title": "Date From",
             "type": ["string", "null"],
-            "description": "Sets range period of returned data. Start date in format YYYY-MM-DD"
+            "description": "Sets range period of returned data. Start date in format YYYY-MM-DD",
+            "default": null
         },
         "dateTo": {
+            "title": "Date To",
             "type": ["string", "null"],
-            "description": "Sets range period of returned data. End date in format YYYY-MM-DD"
+            "description": "Sets range period of returned data. End date in format YYYY-MM-DD",
+            "default": null
         },
         "campaignIds": {
+            "title": "Campaign IDs",
             "description": "Campaign ids to download.",
             "type": "array",
             "items": {
@@ -31,8 +40,11 @@
             }
         },
         "datasets": {
+            "title": "Datasets",
             "description": "List of datasets to download.",
             "type": "array",
+            "format": "checkbox",
+            "uniqueItems": true,
             "items": {
                 "type": "string",
                 "enum": [
@@ -54,11 +66,12 @@
         },
         "sinceLastRun": {
             "type": "boolean",
-            "description": "Overrides the period parameters and returns data in period since the last run of component."
+            "description": "Overrides the period parameters and returns data in period since the last run of component.",
+            "default": false
         }
     },
     "required": [
-        "clientId", "#clientMd5", "datasets", "sinceLastRun"
+        "clientId", "#clientMd5", "datasets", "sinceLastRun", "dateFrom", "dateTo", "daysPeriod"
     ]
 }
 
