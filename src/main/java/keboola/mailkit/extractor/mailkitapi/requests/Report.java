@@ -2,9 +2,6 @@
  */
 package keboola.mailkit.extractor.mailkitapi.requests;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 /**
  *
  * @author David Esner <esnerda at gmail.com>

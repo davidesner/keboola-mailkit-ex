@@ -54,7 +54,7 @@ import org.supercsv.prefs.CsvPreference;
 public class Extractor {
 
     private final static int REQUEST_WAIT_INTERVAL = 0;
-    private final static boolean LOG = false;
+    private final static boolean LOG = true;
     private final static String logName = "log.txt";
 
     public static void main(String[] args) {
