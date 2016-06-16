@@ -60,6 +60,12 @@ The component allows retrieving all datasets provided by Mailkit Reporting API a
 - **sinceLastRun** – download data in time period since last run (retrieves data since last download was performed) *DEFAULT: FALSE*. ***NOTE***: If `dateFrom` is specified, all data since dateFrom until NOW
      will be downloaded on the first run, each other consequent run will ignore the dateFrom parameter and retrieve data in period since lastRun.
 
+**NOTE:** If `Date From` and `Date To` parameters are not specified, the API retrieves data in default intervals as specified below:
+- Last month for `REPORT` dataset
+- last 3 months for `REPORT_CAMPAIGN` dataset
+
+Moreover, if `Date From` is not specified, the `Date To` parameter is ignored.
+
 ##Output
 In current version output tables are NOT loaded into the Storage incrementally. Which means, that datasets in input bucket will be rewritten each run.
 
