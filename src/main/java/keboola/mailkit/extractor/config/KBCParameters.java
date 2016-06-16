@@ -81,7 +81,7 @@ public class KBCParameters {
             setDateTo(Instant.now());
             setDateFrom(Instant.now().minus(Long.valueOf(period), ChronoUnit.DAYS));
         } else {
-            if (dateFrom.equals("")) {
+            if (dateFrom != null && dateFrom.equals("")) {
                 this.dateFrom = null;
             } else {
                 this.dateFrom = dateFrom;
