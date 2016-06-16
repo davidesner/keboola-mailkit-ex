@@ -44,19 +44,19 @@ The component allows retrieving all datasets provided by Mailkit Reporting API a
 **NOTE:** Due to the current API architecture, the application might generate large number of API requests, especially when retrieving data within long time periods. For example to retrieve datasets `LINKS` and `LINKS_VISITORS` for all campaigns the app generates API request for each campaign to retrieve messages, then for each message to retrieve links and then for each link to retrieve link_visitors dataset. Therefore, the app run times may be longer.
 ##Configuration
 ###Parameters
-- **clientId** – *(REQ)* your Mailkit client_id
-- **#clientMd5** – *(REQ)* Mailkit client MD5
+- **Client ID** – *(REQ)* your Mailkit client_id
+- **Client MD5** – *(REQ)* Mailkit client MD5
      hash.
-- **daysPeriod** – *(OPT)* specifies the date
+- **Days Period** – *(OPT)* specifies the date
      period of returned data in number of days. For example if the value is 5
      and dateTo is not specified, data between today and five days ago will be
      retrieved. 
-- **dateFrom** – *(OPT)* begin of time period
+- **Date From** – *(OPT)* begin of time period
      of extracted data. Format `YYYY-MM-DD`
-- **dateTo** – *(OPT)* end of time period of
+- **Date To** – *(OPT)* end of time period of
      extracted data. Format `YYYY-MM-DD`
-- **datasets** – list of datasets to download. Supported values:    [`ALL` ,`CAMPAIGNS`, `REPORT`, `REPORT_CAMPAIGN`, `REPORT_MSG`, `MSG_RECIPIENTS`, `MSG_FEEDBACK`, `MSG_LINKS`, `LINKS_VISITORS`,         `MSG_BOUNCES`]. Description of each dataset is provided in former section.
-- **campaignIds** – list of campaign IDs to download. Only data regarding specified campaigns will be downloaded. If not specified, data of all campaigns in specified interval is downloaded. 
+- **Datasets** – list of datasets to download. Supported values:    [`ALL` ,`CAMPAIGNS`, `REPORT`, `REPORT_CAMPAIGN`, `REPORT_MSG`, `MSG_RECIPIENTS`, `MSG_FEEDBACK`, `MSG_LINKS`, `LINKS_VISITORS`, `MSG_BOUNCES`]. Description of each dataset is provided in former section.
+- **Campaign IDs** – list of campaign IDs to download. Only data regarding specified campaigns will be downloaded. If not specified, data of all campaigns in specified interval is downloaded. 
 - **sinceLastRun** – download data in time period since last run (retrieves data since last download was performed) *DEFAULT: FALSE*. ***NOTE***: If `dateFrom` is specified, all data since dateFrom until NOW
      will be downloaded on the first run, each other consequent run will ignore the dateFrom parameter and retrieve data in period since lastRun.
 
