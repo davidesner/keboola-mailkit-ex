@@ -454,11 +454,11 @@ public class Extractor {
                 /*check for special cases - QUICK FIX*/
                 switch (f.getName()) {
                     case "raw_messages.csv":
-                        man = new ManifestFile(null, true, new String[]{"ID_send_message"}, ",", "\"");
+                        man = new ManifestFile(null, false, new String[]{"ID_send_message"}, ",", "\"");
                         break;
                     case "raw_bounces.csv":
                     case "raw_responses.csv":
-                        man = new ManifestFile(null, true, new String[]{"ID_log"}, ",", "\"");
+                        man = new ManifestFile(null, false, new String[]{"ID_log"}, ",", "\"");
                         break;
                     default:
                         man = new ManifestFile(null, false, null, ",", "\"");
