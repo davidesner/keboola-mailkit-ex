@@ -65,12 +65,12 @@ public abstract class MailkitJsonRequest implements MailkitRequest {
     }
 
     @Override
-    public void setClient_id(String client_id) {
+    public final void setClient_id(String client_id) {
         this.client_id = client_id;
     }
 
     @Override
-    public void setClient_md5(String client_md5) {
+    public final void setClient_md5(String client_md5) {
         this.client_md5 = client_md5;
     }
 

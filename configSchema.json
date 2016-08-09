@@ -57,10 +57,15 @@
                     "MSG_FEEDBACK",
                     "MSG_LINKS",
                     "LINKS_VISITORS",
-                    "MSG_BOUNCES"
+                    "MSG_BOUNCES",
+                    "RAW_BOUNCES",
+                    "RAW_RESPONSES",
+                    "RAW_MESSAGES"
                 ]
             },
-            "default": "ALL",
+            "default": ["CAMPAIGNS", "RAW_BOUNCES",
+                "RAW_RESPONSES",
+                "RAW_MESSAGES"],
             "minItems": 0,
             "uniqueItems": true
         },

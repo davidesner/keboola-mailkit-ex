@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import keboola.mailkit.extractor.config.JsonConfigParser;
@@ -33,6 +34,8 @@ import keboola.mailkit.extractor.mailkitapi.requests.MsgFeedback;
 import keboola.mailkit.extractor.mailkitapi.requests.MsgLinks;
 import keboola.mailkit.extractor.mailkitapi.requests.MsgLinksVisitors;
 import keboola.mailkit.extractor.mailkitapi.requests.MsgRecipients;
+import keboola.mailkit.extractor.mailkitapi.requests.RawMessages;
+import keboola.mailkit.extractor.mailkitapi.requests.RawResponses;
 import keboola.mailkit.extractor.mailkitapi.requests.Report;
 import keboola.mailkit.extractor.mailkitapi.requests.ReportCampaign;
 import keboola.mailkit.extractor.mailkitapi.requests.ReportMessage;
@@ -54,7 +57,7 @@ import org.supercsv.prefs.CsvPreference;
 public class Extractor {
 
     private final static int REQUEST_WAIT_INTERVAL = 0;
-    private final static boolean LOG = true;
+    private final static boolean LOG = false;
     private final static String logName = "log.txt";
 
     public static void main(String[] args) {
@@ -207,7 +210,7 @@ public class Extractor {
             int i = 0;
             Map<String, String> keyCols = new HashMap<>();
             boolean append = false;
-
+            Set<String> datasetsToGet = config.getParams().getDatasets();
             System.out.println("Downloading campaign report.");
             for (String cId : campaignIds) {
                 Thread.sleep(REQUEST_WAIT_INTERVAL);
@@ -222,13 +225,126 @@ public class Extractor {
                 sendIds.addAll(jc.convertAndAdd(jsResp.getFilePath(), outTablesPath + File.separator + "campaignReports.csv", keyCols, append, "ID_SEND"));
                 i++;
             }
+            System.out.println("Downloading RAW data.");
+            /*Retrieve data using RAW functions*/
+            for (String cId : campaignIds) {
+
+                //RAW MESSAGES
+                if (datasetsToGet.contains(KBCParameters.REQUEST_TYPE.RAW_MESSAGES.name())) {
+                    boolean hasNextData = true;
+                    boolean firstRun = true;
+                    Long lastId;
+                    if (lastState != null) {
+                        lastId = lastState.getRawMessagesLastId();
+                    } else {
+                        lastId = null;
+                    }
+
+                    while (hasNextData) {
+                        jsonRq = new RawMessages(cId, lastId, null, null);
+                        jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
+                        if (!checkResponseStatus(jsResp, jsonRq)) {
+                            System.err.println("Unable to retrieve all records. Will retry on next run starting with ID: " + lastId);
+                            break;
+                            //TODO: persist last ID
+                        }
+                        append = !firstRun;
+                        String resPath = outTablesPath + File.separator + "raw_messages.csv";
+                        List<String> ids = jc.convert(jsResp.getFilePath(), resPath, "ID_send_message", append);
+                        //has next data?
+                        if (!ids.isEmpty()) {
+                            lastId = Long.valueOf(ids.get(ids.size() - 1));
+                            lastId++;
+                        } else {
+                            hasNextData = false;
+                        }
+                        firstRun = false;
+                        Thread.sleep(REQUEST_WAIT_INTERVAL);
+                    }
+                    if (lastState != null) {
+                        lastState.setRawMessagesLastId(lastId);
+                    }
+                }
+                //RAW RESPONSES
+                if (datasetsToGet.contains(KBCParameters.REQUEST_TYPE.RAW_RESPONSES.name())) {
+                    boolean hasNextData = true;
+                    boolean firstRun = true;
+                    Long lastId;
+                    if (lastState != null) {
+                        lastId = lastState.getRawResponsesLastId();
+                    } else {
+                        lastId = null;
+                    }
+
+                    while (hasNextData) {
+                        jsonRq = new RawResponses(cId, null, null, lastId, null);
+                        jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
+                        if (!checkResponseStatus(jsResp, jsonRq)) {
+                            System.err.println("Unable to retrieve all records. Will retry on next run starting with ID: " + lastId);
+                            break;
+                            //TODO: persist last ID
+                        }
+                        append = !firstRun;
+                        String resPath = outTablesPath + File.separator + "raw_responses.csv";
+                        List<String> ids = jc.convert(jsResp.getFilePath(), resPath, "ID_log", append);
+                        //has next data?
+                        if (!ids.isEmpty()) {
+                            lastId = Long.valueOf(ids.get(ids.size() - 1));
+                            lastId++;
+                        } else {
+                            hasNextData = false;
+                        }
+                        firstRun = false;
+                        Thread.sleep(REQUEST_WAIT_INTERVAL);
+                    }
+                    if (lastState != null) {
+                        lastState.setRawResponsesLastId(lastId);
+                    }
+                }
+                //RAW BOUNCES
+                if (datasetsToGet.contains(KBCParameters.REQUEST_TYPE.RAW_BOUNCES.name())) {
+                    boolean hasNextData = true;
+                    boolean firstRun = true;
+                    Long lastId;
+                    if (lastState != null) {
+                        lastId = lastState.getRawBouncesLastId();
+                    } else {
+                        lastId = null;
+                    }
+
+                    while (hasNextData) {
+                        jsonRq = new RawResponses(cId, null, null, lastId, null);
+                        jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
+                        if (!checkResponseStatus(jsResp, jsonRq)) {
+                            System.err.println("Unable to retrieve all records. Will retry on next run starting with ID: " + lastId);
+                            break;
+                            //TODO: persist last ID
+                        }
+                        append = !firstRun;
+                        String resPath = outTablesPath + File.separator + "raw_bounces.csv";
+                        List<String> ids = jc.convert(jsResp.getFilePath(), resPath, "ID_log", append);
+                        //has next data?
+                        if (!ids.isEmpty()) {
+                            lastId = Long.valueOf(ids.get(ids.size() - 1));
+                            lastId++;
+                        } else {
+                            hasNextData = false;
+                        }
+                        firstRun = false;
+                        Thread.sleep(REQUEST_WAIT_INTERVAL);
+                    }
+                    if (lastState != null) {
+                        lastState.setRawBouncesLastId(lastId);
+                    }
+                }
+            }
 
             /*Get data for all messages*/
             List<String> linkIds;
             boolean firstRun = true;
+
             System.out.println("Downloading campaign send reports.");
             for (String sId : sendIds) {
-
                 if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_BOUNCES.name())) {
                     Thread.sleep(REQUEST_WAIT_INTERVAL);
                     jsonRq = new MsgBounces(sId);
@@ -334,7 +450,20 @@ public class Extractor {
         for (File f : fileList) {
             try {
                 //build manifest file
-                ManifestFile man = new ManifestFile(null, false, null, ",", "\"");
+                ManifestFile man = null;
+                /*check for special cases - QUICK FIX*/
+                switch (f.getName()) {
+                    case "raw_messages.csv":
+                        man = new ManifestFile(null, true, new String[]{"ID_send_message"}, ",", "\"");
+                        break;
+                    case "raw_bounces.csv":
+                    case "raw_responses.csv":
+                        man = new ManifestFile(null, true, new String[]{"ID_log"}, ",", "\"");
+                        break;
+                    default:
+                        man = new ManifestFile(null, false, null, ",", "\"");
+                        break;
+                }
                 ManifestBuilder.buildManifestFile(man, outTablesPath, f.getName());
             } catch (IOException ex) {
                 System.err.println("Unable to write manifest file " + f.getName());
@@ -344,6 +473,7 @@ public class Extractor {
 
         try {
             /*Write state file*/
+
             JsonStateWriter.writeStateFile(dataPath + File.separator + "out", lastState);
         } catch (IOException ex) {
             System.err.println("Unable to write state file");

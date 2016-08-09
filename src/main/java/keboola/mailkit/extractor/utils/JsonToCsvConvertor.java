@@ -46,7 +46,7 @@ import org.supercsv.prefs.CsvPreference;
  * @created 2015
  */
 public class JsonToCsvConvertor {
-    
+
     private final CsvPreference csvPreference;
     private boolean headerLengthVaries;
     private boolean append;
@@ -65,28 +65,28 @@ public class JsonToCsvConvertor {
      * @throws Exception
      */
     public void convert(String sourcePath, String destPath) throws Exception {
-        
+
         File source = new File(sourcePath);
         if (!source.exists()) {
             throw new Exception("File: " + sourcePath + " does not exist.");
         }
         File destination = new File(destPath);
-        
+
         FileInputStream fis = null;
         fis = new FileInputStream(source);
         convert(fis, source, destination, null, null);
     }
-    
+
     public void singleJsonObjectToCsv(String srcPath, String destPath, Map<String, String> colsToAdd, boolean append) throws ConvertException {
         CsvMapWriter mapWriter = null;
-        
+
         File source = new File(srcPath);
         if (!source.exists()) {
             throw new ConvertException("File: " + srcPath + " does not exist.");
         }
         File dest = new File(destPath);
         if (append) {
-            
+
             if (!dest.exists()) {
                 append = false;
             }
@@ -101,12 +101,12 @@ public class JsonToCsvConvertor {
             if (colsToAdd != null && !colsToAdd.isEmpty()) {
                 resmap.putAll(colsToAdd);
             }
-            
+
             mapWriter = new CsvMapWriter(new BufferedWriter(new FileWriter(dest, append)),
                     CsvPreference.STANDARD_PREFERENCE);
             final String[] header = resmap.keySet().toArray(new String[0]);
             final CellProcessor[] processors = getProcessors(header.length);
-            
+
             if (!append) {
                 // write the header
                 mapWriter.writeHeader(header);
@@ -125,16 +125,16 @@ public class JsonToCsvConvertor {
                 Logger.getLogger(JsonToCsvConvertor.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
     }
-    
+
     public void convertAndAdd(String sourcePath, String destPath, Map<String, String> colsToAdd, boolean append) throws ConvertException {
         this.append = append;
         File source = new File(sourcePath);
         if (!source.exists()) {
             throw new ConvertException("File: " + sourcePath + " does not exist.");
         }
-        
+
         File destination = new File(destPath);
         FileInputStream is;
         try {
@@ -142,18 +142,18 @@ public class JsonToCsvConvertor {
         } catch (FileNotFoundException ex) {
             throw new ConvertException(ex.getMessage());
         }
-        
+
         convert(is, null, destination, colsToAdd, null);
     }
-    
+
     public List<String> convert(String sourcePath, String destPath, String returnColName) throws ConvertException {
-        
+
         File source = new File(sourcePath);
         if (!source.exists()) {
             throw new ConvertException("File: " + sourcePath + " does not exist.");
         }
         File destination = new File(destPath);
-        
+
         FileInputStream is;
         try {
             is = new FileInputStream(source);
@@ -162,14 +162,32 @@ public class JsonToCsvConvertor {
         }
         return convert(is, source, destination, null, returnColName);
     }
-    
+
+    public List<String> convert(String sourcePath, String destPath, String returnColName, boolean append) throws ConvertException {
+
+        this.append = append;
+        File source = new File(sourcePath);
+        if (!source.exists()) {
+            throw new ConvertException("File: " + sourcePath + " does not exist.");
+        }
+        File destination = new File(destPath);
+
+        FileInputStream is;
+        try {
+            is = new FileInputStream(source);
+        } catch (FileNotFoundException ex) {
+            throw new ConvertException(ex.getMessage());
+        }
+        return convert(is, source, destination, null, returnColName);
+    }
+
     public List<String> convertAndAdd(String sourcePath, String destPath, Map<String, String> colsToAdd, boolean append, String returnColName) throws ConvertException {
         this.append = append;
         File source = new File(sourcePath);
         if (!source.exists()) {
             throw new ConvertException("File: " + sourcePath + " does not exist.");
         }
-        
+
         File destination = new File(destPath);
         FileInputStream is;
         try {
@@ -177,42 +195,42 @@ public class JsonToCsvConvertor {
         } catch (FileNotFoundException ex) {
             throw new ConvertException(ex.getMessage());
         }
-        
+
         return convert(is, null, destination, colsToAdd, returnColName);
     }
-    
+
     public void convertAndAddFromString(String data, String destPath, Map<String, String> colsToAdd, boolean append) throws ConvertException {
         this.append = append;
         this.headerLengthVaries = false;
-        
+
         File destination = new File(destPath);
         InputStream is = new ByteArrayInputStream(data.getBytes());
-        
+
         convert(is, null, destination, colsToAdd, null);
     }
-    
+
     private List<String> convert(InputStream is, File source, File destination,
             Map<String, String> colsToAdd, String returnColName) throws ConvertException {
-        
+
         if (!destination.exists()) {
             this.append = false;
         }
-        
+
         CsvMapWriter writer = null;
         BufferedReader rd = null;
         FileOutputStream fos;
-        
+
         List<String> returnCol = new ArrayList<>();
-        
+
         try {
-            
+
             JsonFactory f = new MappingJsonFactory();
-            
+
             rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-            
+
             JsonParser jp = f.createParser(rd);
             JsonToken currentToken;
-            
+
             boolean firstRun = true;
             currentToken = jp.nextToken();
             if (currentToken != JsonToken.START_ARRAY) {
@@ -246,7 +264,7 @@ public class JsonToCsvConvertor {
                 // read the record into a tree model,
                 // this moves the parsing position to the end of it
                 JsonNode node = jp.readValueAsTree();
-                
+
                 for (Iterator<String> fields = node.fieldNames(); fields.hasNext();) {
                     String field = fields.next();
                     lineData.put(field, node.get(field).asText());
@@ -254,7 +272,7 @@ public class JsonToCsvConvertor {
                     if (colsToAdd != null) {
                         lineData.putAll(colsToAdd);
                     }
-                    
+
                 }
 
                 //writer to output file
@@ -291,15 +309,15 @@ public class JsonToCsvConvertor {
                 writer.close();
                 rd.close();
                 is.close();
-                
+
             } catch (IOException ex) {
                 ex.printStackTrace();
             } catch (RuntimeException ex) {
-                
+
             }
-            
+
         }
-        
+
     }
 
     /**
@@ -310,9 +328,9 @@ public class JsonToCsvConvertor {
      * @throws Exception
      */
     private Map<String, String> getAllHeaders(File jsonFile) throws Exception {
-        
+
         Map<String, String> headers = new LinkedHashMap<String, String>();
-        
+
         FileInputStream fis = null;
         BufferedReader rd = null;
         JsonParser jp = null;
@@ -320,16 +338,16 @@ public class JsonToCsvConvertor {
             JsonFactory f = new MappingJsonFactory();
             fis = new FileInputStream(jsonFile);
             rd = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
-            
+
             jp = f.createParser(rd);
             JsonToken currentToken;
             jp.nextToken();
             currentToken = jp.nextToken();
-            
+
             while (currentToken != JsonToken.END_ARRAY) {
-                
+
                 JsonNode node = jp.readValueAsTree();
-                
+
                 for (Iterator<String> fields = node.fieldNames(); fields.hasNext();) {
                     String field = fields.next();
                     //add header,if not already exist
@@ -337,9 +355,9 @@ public class JsonToCsvConvertor {
                 }
                 currentToken = jp.nextToken();
             }
-            
+
             return headers;
-            
+
         } catch (FileNotFoundException ex) {
             throw new Exception("Error reading file: " + jsonFile.getName() + " " + ex.getMessage());
         } catch (IOException ex) {
@@ -356,18 +374,18 @@ public class JsonToCsvConvertor {
         CellProcessor[] processors = new CellProcessor[length];
         for (int i = 0; i < length; i++) {
             processors[i] = new Optional();
-            
+
         }
-        
+
         return processors;
-        
+
     }
-    
+
     public static class ConvertException extends Exception {
-        
+
         public ConvertException(String message) {
             super(message);
         }
-        
+
     }
 }

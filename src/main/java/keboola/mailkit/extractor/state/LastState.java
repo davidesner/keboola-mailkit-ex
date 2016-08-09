@@ -17,6 +17,12 @@ public class LastState {
     @JsonProperty("lastRunDate")
     private Instant lastRunDate;
 
+    private Long rawMessagesLastId;
+
+    private Long rawResponsesLastId;
+
+    private Long rawBouncesLastId;
+
     public LastState(Instant lastRunDate) {
         this.lastRunDate = lastRunDate;
     }
@@ -27,6 +33,30 @@ public class LastState {
 
     public void setLastRunDate(Instant lastRunDate) {
         this.lastRunDate = lastRunDate;
+    }
+
+    public Long getRawMessagesLastId() {
+        return rawMessagesLastId;
+    }
+
+    public void setRawMessagesLastId(Long rawMessagesLastId) {
+        this.rawMessagesLastId = rawMessagesLastId;
+    }
+
+    public Long getRawResponsesLastId() {
+        return rawResponsesLastId;
+    }
+
+    public void setRawResponsesLastId(Long rawResponsesLastId) {
+        this.rawResponsesLastId = rawResponsesLastId;
+    }
+
+    public Long getRawBouncesLastId() {
+        return rawBouncesLastId;
+    }
+
+    public void setRawBouncesLastId(Long rawBouncesLastId) {
+        this.rawBouncesLastId = rawBouncesLastId;
     }
 
     public LastState() {
