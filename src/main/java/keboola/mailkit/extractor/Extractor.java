@@ -442,6 +442,8 @@ public class Extractor {
             System.exit(1);
         } catch (InterruptedException ex) {
             Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (RuntimeException ex) {
+            ex.printStackTrace();
         }
         jsonClient.cleanupTempFolder();
 
