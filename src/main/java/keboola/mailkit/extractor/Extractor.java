@@ -235,7 +235,7 @@ public class Extractor {
                     boolean hasNextData = true;
 
                     Long lastId;
-                    if (lastState != null) {
+                    if (lastState != null && lastState.getRawMessagesLastId() != null) {
                         lastId = lastState.getRawMessagesLastId().get(cId);
                     } else {
                         lastId = null;
@@ -271,7 +271,7 @@ public class Extractor {
                     boolean hasNextData = true;
 
                     Long lastId;
-                    if (lastState != null) {
+                    if (lastState != null && lastState.getRawResponsesLastId() != null) {
                         lastId = lastState.getRawResponsesLastId().get(cId);
                     } else {
                         lastId = null;
@@ -307,7 +307,7 @@ public class Extractor {
                     boolean hasNextData = true;
 
                     Long lastId;
-                    if (lastState != null) {
+                    if (lastState != null && lastState.getRawBouncesLastId() != null) {
                         lastId = lastState.getRawBouncesLastId().get(cId);
                     } else {
                         lastId = null;
@@ -444,6 +444,7 @@ public class Extractor {
             Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
         } catch (RuntimeException ex) {
             ex.printStackTrace();
+            System.exit(1);
         }
         jsonClient.cleanupTempFolder();
 
