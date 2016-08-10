@@ -235,7 +235,7 @@ public class Extractor {
                     boolean hasNextData = true;
 
                     Long lastId;
-                    if (lastState != null && lastState.getRawMessagesLastId() != null) {
+                    if (lastState != null) {
                         lastId = lastState.getRawMessagesLastId().get(cId);
                     } else {
                         lastId = null;
@@ -271,7 +271,7 @@ public class Extractor {
                     boolean hasNextData = true;
 
                     Long lastId;
-                    if (lastState != null && lastState.getRawResponsesLastId() != null) {
+                    if (lastState != null) {
                         lastId = lastState.getRawResponsesLastId().get(cId);
                     } else {
                         lastId = null;
@@ -307,7 +307,7 @@ public class Extractor {
                     boolean hasNextData = true;
 
                     Long lastId;
-                    if (lastState != null && lastState.getRawBouncesLastId() != null) {
+                    if (lastState != null) {
                         lastId = lastState.getRawBouncesLastId().get(cId);
                     } else {
                         lastId = null;

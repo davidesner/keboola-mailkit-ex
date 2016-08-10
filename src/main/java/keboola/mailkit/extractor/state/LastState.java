@@ -2,6 +2,7 @@
  */
 package keboola.mailkit.extractor.state;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -30,6 +31,27 @@ public class LastState {
         this.rawBouncesLastId = new HashMap<>();
         this.rawResponsesLastId = new HashMap();
         this.lastRunDate = lastRunDate;
+    }
+
+    @JsonCreator
+    public LastState(@JsonProperty("lastRunDate") Instant lastRunDate, @JsonProperty("rawMessagesLastId") Map<String, Long> rawMessagesLastId,
+            @JsonProperty("rawResponsesLastId") Map<String, Long> rawResponsesLastId, @JsonProperty("rawBouncesLastId") Map<String, Long> rawBouncesLastId) {
+        this.lastRunDate = lastRunDate;
+        if (rawMessagesLastId != null) {
+            this.rawMessagesLastId = rawMessagesLastId;
+        } else {
+            this.rawMessagesLastId = new HashMap<>();
+        }
+        if (rawResponsesLastId != null) {
+            this.rawResponsesLastId = rawResponsesLastId;
+        } else {
+            this.rawResponsesLastId = new HashMap<>();
+        }
+        if (rawBouncesLastId != null) {
+            this.rawBouncesLastId = rawBouncesLastId;
+        } else {
+            this.rawBouncesLastId = new HashMap<>();
+        }
     }
 
     public Instant getLastRunDate() {
