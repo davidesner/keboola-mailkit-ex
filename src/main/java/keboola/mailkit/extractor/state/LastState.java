@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -17,13 +19,16 @@ public class LastState {
     @JsonProperty("lastRunDate")
     private Instant lastRunDate;
 
-    private Long rawMessagesLastId;
+    private Map<String, Long> rawMessagesLastId;
 
-    private Long rawResponsesLastId;
+    private Map<String, Long> rawResponsesLastId;
 
-    private Long rawBouncesLastId;
+    private Map<String, Long> rawBouncesLastId;
 
     public LastState(Instant lastRunDate) {
+        this.rawMessagesLastId = new HashMap<>();
+        this.rawBouncesLastId = new HashMap<>();
+        this.rawResponsesLastId = new HashMap();
         this.lastRunDate = lastRunDate;
     }
 
@@ -35,27 +40,27 @@ public class LastState {
         this.lastRunDate = lastRunDate;
     }
 
-    public Long getRawMessagesLastId() {
+    public Map<String, Long> getRawMessagesLastId() {
         return rawMessagesLastId;
     }
 
-    public void setRawMessagesLastId(Long rawMessagesLastId) {
+    public void setRawMessagesLastId(Map<String, Long> rawMessagesLastId) {
         this.rawMessagesLastId = rawMessagesLastId;
     }
 
-    public Long getRawResponsesLastId() {
+    public Map<String, Long> getRawResponsesLastId() {
         return rawResponsesLastId;
     }
 
-    public void setRawResponsesLastId(Long rawResponsesLastId) {
+    public void setRawResponsesLastId(Map<String, Long> rawResponsesLastId) {
         this.rawResponsesLastId = rawResponsesLastId;
     }
 
-    public Long getRawBouncesLastId() {
+    public Map<String, Long> getRawBouncesLastId() {
         return rawBouncesLastId;
     }
 
-    public void setRawBouncesLastId(Long rawBouncesLastId) {
+    public void setRawBouncesLastId(Map<String, Long> rawBouncesLastId) {
         this.rawBouncesLastId = rawBouncesLastId;
     }
 

@@ -227,15 +227,16 @@ public class Extractor {
             }
             System.out.println("Downloading RAW data.");
             /*Retrieve data using RAW functions*/
+            append = true;
             for (String cId : campaignIds) {
 
                 //RAW MESSAGES
                 if (datasetsToGet.contains(KBCParameters.REQUEST_TYPE.RAW_MESSAGES.name())) {
                     boolean hasNextData = true;
-                    boolean firstRun = true;
+
                     Long lastId;
                     if (lastState != null) {
-                        lastId = lastState.getRawMessagesLastId();
+                        lastId = lastState.getRawMessagesLastId().get(cId);
                     } else {
                         lastId = null;
                     }
@@ -248,7 +249,7 @@ public class Extractor {
                             break;
                             //TODO: persist last ID
                         }
-                        append = !firstRun;
+
                         String resPath = outTablesPath + File.separator + "raw_messages.csv";
                         List<String> ids = jc.convert(jsResp.getFilePath(), resPath, "ID_send_message", append);
                         //has next data?
@@ -258,20 +259,20 @@ public class Extractor {
                         } else {
                             hasNextData = false;
                         }
-                        firstRun = false;
+
                         Thread.sleep(REQUEST_WAIT_INTERVAL);
                     }
                     if (lastState != null) {
-                        lastState.setRawMessagesLastId(lastId);
+                        lastState.getRawMessagesLastId().put(cId, lastId);
                     }
                 }
                 //RAW RESPONSES
                 if (datasetsToGet.contains(KBCParameters.REQUEST_TYPE.RAW_RESPONSES.name())) {
                     boolean hasNextData = true;
-                    boolean firstRun = true;
+
                     Long lastId;
                     if (lastState != null) {
-                        lastId = lastState.getRawResponsesLastId();
+                        lastId = lastState.getRawResponsesLastId().get(cId);
                     } else {
                         lastId = null;
                     }
@@ -284,7 +285,7 @@ public class Extractor {
                             break;
                             //TODO: persist last ID
                         }
-                        append = !firstRun;
+
                         String resPath = outTablesPath + File.separator + "raw_responses.csv";
                         List<String> ids = jc.convert(jsResp.getFilePath(), resPath, "ID_log", append);
                         //has next data?
@@ -294,20 +295,20 @@ public class Extractor {
                         } else {
                             hasNextData = false;
                         }
-                        firstRun = false;
+
                         Thread.sleep(REQUEST_WAIT_INTERVAL);
                     }
                     if (lastState != null) {
-                        lastState.setRawResponsesLastId(lastId);
+                        lastState.getRawResponsesLastId().put(cId, lastId);
                     }
                 }
                 //RAW BOUNCES
                 if (datasetsToGet.contains(KBCParameters.REQUEST_TYPE.RAW_BOUNCES.name())) {
                     boolean hasNextData = true;
-                    boolean firstRun = true;
+
                     Long lastId;
                     if (lastState != null) {
-                        lastId = lastState.getRawBouncesLastId();
+                        lastId = lastState.getRawBouncesLastId().get(cId);
                     } else {
                         lastId = null;
                     }
@@ -320,7 +321,7 @@ public class Extractor {
                             break;
                             //TODO: persist last ID
                         }
-                        append = !firstRun;
+
                         String resPath = outTablesPath + File.separator + "raw_bounces.csv";
                         List<String> ids = jc.convert(jsResp.getFilePath(), resPath, "ID_log", append);
                         //has next data?
@@ -330,11 +331,11 @@ public class Extractor {
                         } else {
                             hasNextData = false;
                         }
-                        firstRun = false;
+
                         Thread.sleep(REQUEST_WAIT_INTERVAL);
                     }
                     if (lastState != null) {
-                        lastState.setRawBouncesLastId(lastId);
+                        lastState.getRawBouncesLastId().put(cId, lastId);
                     }
                 }
             }
@@ -454,11 +455,11 @@ public class Extractor {
                 /*check for special cases - QUICK FIX*/
                 switch (f.getName()) {
                     case "raw_messages.csv":
-                        man = new ManifestFile(null, false, new String[]{"ID_send_message"}, ",", "\"");
+                        man = new ManifestFile(null, true, new String[]{"ID_send_message"}, ",", "\"");
                         break;
                     case "raw_bounces.csv":
                     case "raw_responses.csv":
-                        man = new ManifestFile(null, false, new String[]{"ID_log"}, ",", "\"");
+                        man = new ManifestFile(null, true, new String[]{"ID_log"}, ",", "\"");
                         break;
                     default:
                         man = new ManifestFile(null, false, null, ",", "\"");
