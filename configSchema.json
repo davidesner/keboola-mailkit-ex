@@ -36,6 +36,7 @@
             "description": "Campaign ids to download.",
             "type": "array",
             "items": {
+                "title": "Campaign",
                 "type": "string"
             }
         },
@@ -76,7 +77,7 @@
         }
     },
     "required": [
-        "clientId", "#clientMd5", "datasets", "sinceLastRun", "dateFrom", "dateTo", "daysPeriod"
+        "clientId", "#clientMd5", "datasets", "sinceLastRun", "dateFrom", "dateTo", "daysPeriod", "campaignIds"
     ]
 }
 
