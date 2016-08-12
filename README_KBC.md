@@ -69,7 +69,7 @@ When using deprecated functions, the application might generate large number of 
      of extracted data. Format `YYYY-MM-DD`
 - **Date To** – *(OPT)* end of time period of
      extracted data. Format `YYYY-MM-DD`
-- **Datasets** – list of datasets to download. Supported values:    [`ALL` ,`CAMPAIGNS`, `REPORT`, `REPORT_CAMPAIGN`, `REPORT_MSG`, `MSG_RECIPIENTS`, `MSG_FEEDBACK`, `MSG_LINKS`, `LINKS_VISITORS`, `MSG_BOUNCES`]. Description of each dataset is provided in former section.
+- **Datasets** – list of datasets to download. Supported values:    [`ALL` ,`CAMPAIGNS`, `REPORT`, `REPORT_CAMPAIGN`, `RAW_MESSAGES`, `RAW_RESPONSES`, `RAW_BOUNCES`, `REPORT_MSG`, `MSG_RECIPIENTS`, `MSG_FEEDBACK`, `MSG_LINKS`, `LINKS_VISITORS`, `MSG_BOUNCES`]. Description of each dataset is provided in former section.
 - **Campaign IDs** – list of campaign IDs to download. Only data regarding specified campaigns will be downloaded. If not specified, data of all campaigns in specified interval is downloaded. 
 - **sinceLastRun** – download data in time period since last run (retrieves data since last download was performed) *DEFAULT: FALSE*. ***NOTE***: If `dateFrom` is specified, all data since dateFrom until NOW
      will be downloaded on the first run, each other consequent run will ignore the dateFrom parameter and retrieve data in period since lastRun.
