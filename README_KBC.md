@@ -20,9 +20,6 @@ The component allows retrieving all datasets provided by Mailkit Reporting API a
 - **REPORT_CAMPAIGN**
     - Reports for specific campaigns. 
      ([mailkit.report.campaign](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportcampaign/))
-- **REPORT_MSG**
-    - Statistics about messages sent within campaigns
-    ([mailkit.report.message](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportmessage/))
 - **RAW_MESSAGES**
     - Raw records about all message recipients and sent messages. The period parameters do not apply.
     ([mailkit.report.message](https://www.mailkit.eu/en/help-support/documentation/api/reporting/mailkitreportrawmessages/)
@@ -34,6 +31,9 @@ The component allows retrieving all datasets provided by Mailkit Reporting API a
     ([mailkit.report.message](https://www.mailkit.eu/en/help-support/documentation/api/reporting/mailkitreportrawbounces/))
 
 ####Deprecated recursive functions
+- **REPORT_MSG**
+    - Statistics about messages sent within campaigns
+    ([mailkit.report.message](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportmessage/))
 - **MSG_RECIPIENTS**
     - Statistics about message recipients
     ([mailkit.report.message.recipients](https://www.mailkit.eu/cz/napoveda-pomoc/dokumentace/api/statistiky/mailkitreportmessagerecipients/))
