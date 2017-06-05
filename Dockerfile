@@ -12,4 +12,4 @@ RUN export MAVEN_OPTS="-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimi
 RUN git clone https://github.com/davidesner/keboola-mailkit-ex.git ./  
 RUN mvn -q install
 
-ENTRYPOINT java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -jar target/esnerda.keboola.ex.mailkit-1.1.0-jar-with-dependencies.jar /data  
+ENTRYPOINT java -jar target/esnerda.keboola.ex.mailkit-1.1.0-jar-with-dependencies.jar /data  
