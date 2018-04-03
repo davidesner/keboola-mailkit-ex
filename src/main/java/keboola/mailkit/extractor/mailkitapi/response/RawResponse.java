@@ -56,7 +56,7 @@ public class RawResponse {
     @JsonProperty("ID_user_list")
     private String ID_user_list;
     @JsonProperty("ID_message")
-    private String iDMessage;
+    private String ID_message;
     @JsonProperty("ID_send")
     private String ID_send;
     @JsonProperty("ID_send_message")
@@ -175,7 +175,7 @@ public class RawResponse {
         this.email = email;
         this.ID_email = iDEmail;
         this.ID_user_list = iDUserList;
-        this.iDMessage = iDMessage;
+        this.ID_message = iDMessage;
         this.ID_send = iDSend;
         this.ID_send_message = iDSendMessage;
         this.ID_log = iDLog;
@@ -226,8 +226,8 @@ public class RawResponse {
 		return ID_user_list;
 	}
 
-	public String getiDMessage() {
-		return iDMessage;
+	public String getID_message() {
+		return ID_message;
 	}
 
 	public String getID_send() {

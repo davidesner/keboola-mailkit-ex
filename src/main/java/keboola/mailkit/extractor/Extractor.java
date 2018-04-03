@@ -508,7 +508,7 @@ public class Extractor {
                         man = new ManifestFile(null, true, new String[]{"ID_send_message"}, ",", "\"");
                         break;
                     case "raw_bounces.csv":
-                    	 man = new ManifestFile(null, true, new String[]{"ID_undelivered_log"}, ",", "\"");
+                    	 man = new ManifestFile(null, true, new String[]{"ID_UNDELIVERED_LOG"}, ",", "\"");
                          break;
                     case "raw_responses.csv":
                         man = new ManifestFile(null, true, new String[]{"ID_log"}, ",", "\"");
