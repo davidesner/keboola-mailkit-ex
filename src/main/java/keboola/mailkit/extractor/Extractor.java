@@ -14,6 +14,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.supercsv.cellprocessor.Optional;
+import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.io.CsvMapWriter;
+import org.supercsv.prefs.CsvPreference;
+
+import esnerda.keboola.components.result.IResultWriter;
+import esnerda.keboola.components.result.impl.DefaultBeanResultWriter;
 import keboola.mailkit.extractor.config.JsonConfigParser;
 import keboola.mailkit.extractor.config.KBCConfig;
 import keboola.mailkit.extractor.config.KBCParameters;
@@ -39,13 +47,27 @@ import keboola.mailkit.extractor.mailkitapi.requests.RawResponses;
 import keboola.mailkit.extractor.mailkitapi.requests.Report;
 import keboola.mailkit.extractor.mailkitapi.requests.ReportCampaign;
 import keboola.mailkit.extractor.mailkitapi.requests.ReportMessage;
+import keboola.mailkit.extractor.mailkitapi.response.MsgBouncesResp;
+import keboola.mailkit.extractor.mailkitapi.response.MsgFeedbackResp;
+import keboola.mailkit.extractor.mailkitapi.response.MsgLinksResp;
+import keboola.mailkit.extractor.mailkitapi.response.MsgLinksVisitorResp;
+import keboola.mailkit.extractor.mailkitapi.response.MsgRecipientsResp;
+import keboola.mailkit.extractor.mailkitapi.response.RawBounce;
+import keboola.mailkit.extractor.mailkitapi.response.RawMessage;
+import keboola.mailkit.extractor.mailkitapi.response.RawResponse;
+import keboola.mailkit.extractor.mailkitapi.response.ReportCampaignResp;
+import keboola.mailkit.extractor.mailkitapi.response.ReportMsgResp;
+import keboola.mailkit.extractor.mailkitapi.response.ReportResp;
+import keboola.mailkit.extractor.mailkitapi.response.wrapper.CampaignReportWrapper;
+import keboola.mailkit.extractor.mailkitapi.response.wrapper.MsgBounceWrapper;
+import keboola.mailkit.extractor.mailkitapi.response.wrapper.MsgFeedbackWrapper;
+import keboola.mailkit.extractor.mailkitapi.response.wrapper.MsgLinkVisitorWrapper;
+import keboola.mailkit.extractor.mailkitapi.response.wrapper.MsgLinksWrapper;
+import keboola.mailkit.extractor.mailkitapi.response.wrapper.MsgRecipientWrapper;
+import keboola.mailkit.extractor.mailkitapi.response.wrapper.ReportMsgWrapper;
 import keboola.mailkit.extractor.state.JsonStateWriter;
 import keboola.mailkit.extractor.state.LastState;
 import keboola.mailkit.extractor.utils.JsonToCsvConvertor;
-import org.supercsv.cellprocessor.Optional;
-import org.supercsv.cellprocessor.ift.CellProcessor;
-import org.supercsv.io.CsvMapWriter;
-import org.supercsv.prefs.CsvPreference;
 
 /*
  */
@@ -60,6 +82,19 @@ public class Extractor {
     private final static boolean LOG = false;
     private final static String logName = "log.txt";
 
+    //writers
+    private static IResultWriter<keboola.mailkit.extractor.mailkitapi.response.ReportResp> reportWriter;
+    private static IResultWriter<CampaignReportWrapper> campaignReportWriter;
+    private static IResultWriter<RawMessage> rawMsgWriter;
+    private static IResultWriter<RawResponse> rawResponseWriter;
+    private static IResultWriter<RawBounce> rawBounceWriter;
+    private static IResultWriter<MsgBounceWrapper> msgBounceWriter;
+    private static IResultWriter<MsgFeedbackWrapper> msgFeedbackWriter;
+    private static IResultWriter<MsgRecipientWrapper> msgRecipientsWriter;
+    private static IResultWriter<ReportMsgWrapper> msgReportWriter;
+    private static IResultWriter<MsgLinksWrapper> msgLinksWriter;
+    private static IResultWriter<MsgLinkVisitorWrapper> msgLinkVisitorsWriter;
+    
     public static void main(String[] args) {
 
         if (args.length == 0) {
@@ -123,6 +158,16 @@ public class Extractor {
                 System.exit(1);
             }
         }
+
+        System.out.println("Initializing writers..");
+        try {
+			initWriters(config, outTablesPath);
+		} catch (Exception e) {
+			System.err.println("Unable to set init writers!");
+			e.printStackTrace();
+            System.exit(1);
+		}
+
         System.out.println("Download started with range parameters: dateFrom:" + config.getParams().getDateFrom() + ", dateTo:" + config.getParams().getDateTo());
         //get campaign list via xml rpc endpoint if requested
         if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.CAMPAIGNS.name())) {
@@ -195,7 +240,11 @@ public class Extractor {
                 checkResponseStatus(jsResp, jsonRq);
                 /*process REPORT*/
                 try {
-                    campaignIds = jc.convert(jsResp.getFilePath(), outTablesPath + File.separator + "summaryReport.csv", "ID_MESSAGE");
+                	List<ReportResp> reps = jsResp.getResponseObject(ReportResp.class);
+                	for(ReportResp rp : reps) {
+                		campaignIds.add(rp.getID_MESSAGE().toString());
+                	}                	
+                    reportWriter.writeAllResults(reps);
                 } catch (Exception ex) {
                     Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -219,11 +268,12 @@ public class Extractor {
                 if (!checkResponseStatus(jsResp, jsonRq)) {
                     continue;
                 }
-                keyCols.clear();
-                keyCols.put("ID_MESSAGE", cId);
-                append = i > 0;
-                sendIds.addAll(jc.convertAndAdd(jsResp.getFilePath(), outTablesPath + File.separator + "campaignReports.csv", keyCols, append, "ID_SEND"));
-                i++;
+                List<ReportCampaignResp> reps = jsResp.getResponseObject(ReportCampaignResp.class);
+            	for(ReportCampaignResp rp : reps) {
+            		sendIds.add(rp.getID_SEND().toString());
+            	}                	
+                campaignReportWriter.writeAllResults(CampaignReportWrapper.Builder.build(reps, cId));
+
             }
             System.out.println("Downloading RAW data.");
             /*Retrieve data using RAW functions*/
@@ -250,8 +300,12 @@ public class Extractor {
                             //TODO: persist last ID
                         }
 
-                        String resPath = outTablesPath + File.separator + "raw_messages.csv";
-                        List<String> ids = jc.convert(jsResp.getFilePath(), resPath, "ID_send_message", append);
+                        List<String> ids = new ArrayList<>();
+                       	List<RawMessage> reps = jsResp.getResponseObject(RawMessage.class);
+                    	for(RawMessage rp : reps) {
+                    		ids.add(rp.getID_send_message().toString());
+                    	}                	
+                        rawMsgWriter.writeAllResults(reps);
                         //has next data?
                         if (!ids.isEmpty()) {
                             lastId = Long.valueOf(ids.get(ids.size() - 1));
@@ -286,8 +340,12 @@ public class Extractor {
                             //TODO: persist last ID
                         }
 
-                        String resPath = outTablesPath + File.separator + "raw_responses.csv";
-                        List<String> ids = jc.convert(jsResp.getFilePath(), resPath, "ID_log", append);
+                        List<String> ids = new ArrayList<>();
+                       	List<RawResponse> reps = jsResp.getResponseObject(RawResponse.class);
+                    	for(RawResponse rp : reps) {
+                    		ids.add(rp.getID_log().toString());
+                    	}                	
+                        rawResponseWriter.writeAllResults(reps);
                         //has next data?
                         if (!ids.isEmpty()) {
                             lastId = Long.valueOf(ids.get(ids.size() - 1));
@@ -321,9 +379,12 @@ public class Extractor {
                             break;
                             //TODO: persist last ID
                         }
-
-                        String resPath = outTablesPath + File.separator + "raw_bounces.csv";
-                        List<String> ids = jc.convert(jsResp.getFilePath(), resPath, "ID_log", append);
+                        List<String> ids = new ArrayList<>();
+                       	List<RawResponse> reps = jsResp.getResponseObject(RawResponse.class);
+                    	for(RawResponse rp : reps) {
+                    		ids.add(rp.getID_log().toString());
+                    	}                	
+                        rawResponseWriter.writeAllResults(reps);
                         //has next data?
                         if (!ids.isEmpty()) {
                             lastId = Long.valueOf(ids.get(ids.size() - 1));
@@ -353,11 +414,8 @@ public class Extractor {
                     if (!checkResponseStatus(jsResp, jsonRq)) {
                         continue;
                     }
-                    keyCols.clear();
-                    keyCols.put("ID_SEND", sId);
-                    append = !firstRun;
-                    String resPath = outTablesPath + File.separator + "bounces.csv";
-                    jc.convertAndAdd(jsResp.getFilePath(), resPath, keyCols, append);
+                    List<MsgBouncesResp> reps = jsResp.getResponseObject(MsgBouncesResp.class);
+                    msgBounceWriter.writeAllResults(MsgBounceWrapper.Builder.build(reps, sId));
                 }
 
                 if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_FEEDBACK.name())) {
@@ -367,11 +425,8 @@ public class Extractor {
                     if (!checkResponseStatus(jsResp, jsonRq)) {
                         continue;
                     }
-                    keyCols.clear();
-                    keyCols.put("ID_SEND", sId);
-                    append = !firstRun;
-                    String resPath = outTablesPath + File.separator + "feedback.csv";
-                    jc.convertAndAdd(jsResp.getFilePath(), resPath, keyCols, append);
+                    List<MsgFeedbackResp> reps = jsResp.getResponseObject(MsgFeedbackResp.class);
+                    msgFeedbackWriter.writeAllResults(MsgFeedbackWrapper.Builder.build(reps, sId));
                 }
 
                 if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_RECIPIENTS.name())) {
@@ -381,11 +436,8 @@ public class Extractor {
                     if (!checkResponseStatus(jsResp, jsonRq)) {
                         continue;
                     }
-                    keyCols.clear();
-                    keyCols.put("ID_SEND", sId);
-                    append = !firstRun;
-                    String resPath = outTablesPath + File.separator + "recipients.csv";
-                    jc.convertAndAdd(jsResp.getFilePath(), resPath, keyCols, append);
+                    List<MsgRecipientsResp> reps = jsResp.getResponseObject(MsgRecipientsResp.class);
+                    msgRecipientsWriter.writeAllResults(MsgRecipientWrapper.Builder.build(reps, sId));
                 }
 
                 if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.REPORT_MSG.name())) {
@@ -395,11 +447,8 @@ public class Extractor {
                     if (!checkResponseStatus(jsResp, jsonRq)) {
                         continue;
                     }
-                    keyCols.clear();
-                    keyCols.put("ID_SEND", sId);
-                    append = !firstRun;
-                    String resPath = outTablesPath + File.separator + "messageReport.csv";
-                    jc.singleJsonObjectToCsv(jsResp.getFilePath(), resPath, keyCols, append);
+                    List<ReportMsgResp> reps = jsResp.getResponseObject(ReportMsgResp.class);
+                    msgReportWriter.writeAllResults(ReportMsgWrapper.Builder.build(reps, sId));
                 }
 
                 if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_LINKS.name())) {
@@ -407,11 +456,12 @@ public class Extractor {
                     jsonRq = new MsgLinks(sId);
                     jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
                     checkResponseStatus(jsResp, jsonRq);
-                    keyCols.clear();
-                    keyCols.put("ID_SEND", sId);
-                    append = !firstRun;
-                    String resPath = outTablesPath + File.separator + "links.csv";
-                    linkIds = jc.convertAndAdd(jsResp.getFilePath(), resPath, keyCols, append, "ID_URL");
+                    List<MsgLinksResp> reps = jsResp.getResponseObject(MsgLinksResp.class);
+                    linkIds = new ArrayList<>();
+                    		for(MsgLinksResp rp : reps) {
+                    			linkIds.add(rp.getID_URL().toString());
+                        	} 
+                    msgLinksWriter.writeAllResults(MsgLinksWrapper.Builder.build(reps, sId));
 
                     //link visitors
                     if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.LINKS_VISITORS.name())) {
@@ -421,13 +471,9 @@ public class Extractor {
                             jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
                             if (!checkResponseStatus(jsResp, jsonRq)) {
                                 continue;
-                            }
-                            keyCols.clear();
-                            keyCols.put("ID_SEND", sId);
-                            keyCols.put("ID_URL", urlId);
-                            append = !firstRun;
-                            resPath = outTablesPath + File.separator + "linksVisitors.csv";
-                            jc.convertAndAdd(jsResp.getFilePath(), resPath, keyCols, append, "ID_URL");
+                            }     
+                            List<MsgLinksVisitorResp> repsVis = jsResp.getResponseObject(MsgLinksVisitorResp.class);
+                            msgLinkVisitorsWriter.writeAllResults(MsgLinkVisitorWrapper.Builder.build(repsVis, sId, urlId));
                         }
                     }
                 }
@@ -442,7 +488,7 @@ public class Extractor {
             System.exit(1);
         } catch (InterruptedException ex) {
             Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             System.exit(1);
         }
@@ -480,12 +526,61 @@ public class Extractor {
 
             JsonStateWriter.writeStateFile(dataPath + File.separator + "out", lastState);
         } catch (IOException ex) {
-            System.err.println("Unable to write state file");
+            System.err.println("Unable to write state file! " + ex.getMessage());
         }
+
+        try {
+			closeWriters(config);
+		} catch (Exception e) {
+			 System.err.println("Unable to write results! " + e.getMessage());
+			 System.exit(1);
+		}
         System.out.println("Download completed successfuly..");
     }
 
-    private static boolean checkResponseStatus(MailkitResponse res, MailkitRequest rq) {
+    private static void closeWriters(KBCConfig config) throws Exception {
+    	campaignReportWriter.closeAndRetrieveMetadata();
+
+		Set<String> datasetsToGet = config.getParams().getDatasets();
+		if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.REPORT.name())) {
+			reportWriter.closeAndRetrieveMetadata();
+		}
+
+		if (datasetsToGet.contains(KBCParameters.REQUEST_TYPE.RAW_MESSAGES.name())) {
+			rawMsgWriter.closeAndRetrieveMetadata();
+		}
+		 //RAW RESPONSES
+        if (datasetsToGet.contains(KBCParameters.REQUEST_TYPE.RAW_RESPONSES.name())) {
+        	rawResponseWriter.closeAndRetrieveMetadata();
+        }
+      //RAW BOUNCES
+        if (datasetsToGet.contains(KBCParameters.REQUEST_TYPE.RAW_BOUNCES.name())) {
+        	rawBounceWriter.closeAndRetrieveMetadata();
+        }
+
+        //standard reports
+        if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_BOUNCES.name())) {
+        	msgBounceWriter.closeAndRetrieveMetadata();
+        }
+        if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_FEEDBACK.name())) {
+        	msgFeedbackWriter.closeAndRetrieveMetadata();
+        }
+        if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_RECIPIENTS.name())) {
+        	msgRecipientsWriter.closeAndRetrieveMetadata();
+        }
+        if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.REPORT_MSG.name())) {
+        	msgReportWriter.closeAndRetrieveMetadata();
+        }
+        if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_LINKS.name())) {
+        	msgLinksWriter.closeAndRetrieveMetadata();
+        }
+        if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.LINKS_VISITORS.name())) {
+        	msgLinkVisitorsWriter.closeAndRetrieveMetadata();
+        }
+		
+	}
+
+	private static boolean checkResponseStatus(MailkitResponse res, MailkitRequest rq) {
         if (res.isError()) {
             String err = "";
             if (res.getErrorMessage().equalsIgnoreCase("Unauthorized")) {
@@ -502,6 +597,59 @@ public class Extractor {
         }
         return true;
     }
+
+	private static void initWriters(KBCConfig config, String outTablesPath) throws Exception {
+		campaignReportWriter = new DefaultBeanResultWriter<>("campaignReports.csv", null);
+		campaignReportWriter.initWriter(outTablesPath, CampaignReportWrapper.class);
+
+		Set<String> datasetsToGet = config.getParams().getDatasets();
+		if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.REPORT.name())) {
+			reportWriter = new DefaultBeanResultWriter<>("summaryReport.csv", null);
+			reportWriter.initWriter(outTablesPath, keboola.mailkit.extractor.mailkitapi.response.ReportResp.class);
+		}
+
+		if (datasetsToGet.contains(KBCParameters.REQUEST_TYPE.RAW_MESSAGES.name())) {
+			rawMsgWriter = new DefaultBeanResultWriter<>("raw_messages.csv", null);
+			rawMsgWriter.initWriter(outTablesPath, RawMessage.class);
+		}
+		 //RAW RESPONSES
+        if (datasetsToGet.contains(KBCParameters.REQUEST_TYPE.RAW_RESPONSES.name())) {
+        	rawResponseWriter = new DefaultBeanResultWriter<>("raw_responses.csv", null);
+        	rawResponseWriter.initWriter(outTablesPath, RawResponse.class);
+        }
+      //RAW BOUNCES
+        if (datasetsToGet.contains(KBCParameters.REQUEST_TYPE.RAW_BOUNCES.name())) {
+        	rawBounceWriter = new DefaultBeanResultWriter<>("raw_bounces.csv", null);
+        	rawBounceWriter.initWriter(outTablesPath, RawBounce.class);
+        }
+
+        //standard reports
+        if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_BOUNCES.name())) {
+        	msgBounceWriter = new DefaultBeanResultWriter<>("bounces.csv", null);
+        	msgBounceWriter.initWriter(outTablesPath, MsgBounceWrapper.class);
+        }
+        if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_FEEDBACK.name())) {
+        	msgFeedbackWriter = new DefaultBeanResultWriter<>("feedback.csv", null);
+        	msgFeedbackWriter.initWriter(outTablesPath, MsgFeedbackWrapper.class);
+        }
+        if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_RECIPIENTS.name())) {
+        	msgRecipientsWriter = new DefaultBeanResultWriter<>("recipients.csv", null);
+        	msgRecipientsWriter.initWriter(outTablesPath, MsgRecipientWrapper.class);
+        }
+        if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.REPORT_MSG.name())) {
+        	msgReportWriter = new DefaultBeanResultWriter<>("messageReport.csv", null);
+        	msgReportWriter.initWriter(outTablesPath, ReportMsgWrapper.class);
+        }
+        if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.MSG_LINKS.name())) {
+        	msgLinksWriter = new DefaultBeanResultWriter<>("links.csv", null);
+        	msgLinksWriter.initWriter(outTablesPath, MsgLinksWrapper.class);
+        }
+        if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.LINKS_VISITORS.name())) {
+        	msgLinkVisitorsWriter = new DefaultBeanResultWriter<>("linksVisitors.csv", null);
+        	msgLinkVisitorsWriter.initWriter(outTablesPath, MsgLinkVisitorWrapper.class);
+        }
+
+	}
 
     /**
      * get cell processors with dynamic size

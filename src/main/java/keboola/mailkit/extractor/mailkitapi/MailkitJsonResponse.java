@@ -2,14 +2,20 @@
  */
 package keboola.mailkit.extractor.mailkitapi;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  *
@@ -65,7 +71,48 @@ public class MailkitJsonResponse implements MailkitResponse {
         }
     }
 
-    public String getFilePath() {
+    public <T> List<T> getResponseObject(Class<T> type) throws Exception {
+    	final ObjectMapper mapper = new ObjectMapper(new JsonFactory());
+        mapper.findAndRegisterModules();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        if (isEmptyObj()) {
+        	return Collections.EMPTY_LIST;
+        }
+        if (isSingleObj()) {
+        	List<T> res = new ArrayList<>();
+        	res.add(mapper.readValue(getInputStream(),  type));
+        	return res;
+        }
+        return mapper.readValue(getInputStream(),  mapper.getTypeFactory().constructCollectionType(List.class, type));    	
+    }
+
+    private boolean isSingleObj() {
+    	try (BufferedReader br = Files.newBufferedReader(Paths.get(this.filePath))) {
+
+			String firstLine = br.readLine();
+			br.close();
+			return firstLine.startsWith("{");
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private boolean isEmptyObj() {
+    	try (BufferedReader br = Files.newBufferedReader(Paths.get(this.filePath))) {
+
+			String firstLine = br.readLine();
+			br.close();
+			return "{}".equals(firstLine);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public String getFilePath() {
         return filePath;
     }
 
