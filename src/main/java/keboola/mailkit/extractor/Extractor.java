@@ -42,6 +42,7 @@ import keboola.mailkit.extractor.mailkitapi.requests.MsgFeedback;
 import keboola.mailkit.extractor.mailkitapi.requests.MsgLinks;
 import keboola.mailkit.extractor.mailkitapi.requests.MsgLinksVisitors;
 import keboola.mailkit.extractor.mailkitapi.requests.MsgRecipients;
+import keboola.mailkit.extractor.mailkitapi.requests.RawBounces;
 import keboola.mailkit.extractor.mailkitapi.requests.RawMessages;
 import keboola.mailkit.extractor.mailkitapi.requests.RawResponses;
 import keboola.mailkit.extractor.mailkitapi.requests.Report;
@@ -372,7 +373,7 @@ public class Extractor {
                     }
 
                     while (hasNextData) {
-                        jsonRq = new RawResponses(cId, null, null, lastId, null);
+                        jsonRq = new RawBounces(cId, null, lastId, null);
                         jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
                         if (!checkResponseStatus(jsResp, jsonRq)) {
                             System.err.println("Unable to retrieve all records. Will retry on next run starting with ID: " + lastId);
@@ -380,11 +381,11 @@ public class Extractor {
                             //TODO: persist last ID
                         }
                         List<String> ids = new ArrayList<>();
-                       	List<RawResponse> reps = jsResp.getResponseObject(RawResponse.class);
-                    	for(RawResponse rp : reps) {
-                    		ids.add(rp.getID_log().toString());
+                       	List<RawBounce> reps = jsResp.getResponseObject(RawBounce.class);
+                    	for(RawBounce rp : reps) {
+                    		ids.add(rp.getID_UNDELIVERED_LOG().toString());
                     	}                	
-                        rawResponseWriter.writeAllResults(reps);
+                        rawBounceWriter.writeAllResults(reps);
                         //has next data?
                         if (!ids.isEmpty()) {
                             lastId = Long.valueOf(ids.get(ids.size() - 1));
@@ -507,6 +508,8 @@ public class Extractor {
                         man = new ManifestFile(null, true, new String[]{"ID_send_message"}, ",", "\"");
                         break;
                     case "raw_bounces.csv":
+                    	 man = new ManifestFile(null, true, new String[]{"ID_undelivered_log"}, ",", "\"");
+                         break;
                     case "raw_responses.csv":
                         man = new ManifestFile(null, true, new String[]{"ID_log"}, ",", "\"");
                         break;
