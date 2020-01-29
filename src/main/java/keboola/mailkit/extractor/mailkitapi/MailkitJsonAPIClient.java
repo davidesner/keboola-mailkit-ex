@@ -121,8 +121,6 @@ public class MailkitJsonAPIClient implements MailkitClient {
 
 		try {
 
-			byte[] buffer = new byte[200000];
-
 			if (entity != null) {
 				long len = entity.getContentLength();
 
