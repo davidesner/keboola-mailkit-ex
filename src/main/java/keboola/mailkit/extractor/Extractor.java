@@ -80,7 +80,7 @@ import keboola.mailkit.extractor.utils.JsonToCsvConvertor;
 public class Extractor {
 
     private final static int REQUEST_WAIT_INTERVAL = 0;
-    private final static boolean LOG = false;
+	private final static boolean LOG = false;
     private final static String logName = "log.txt";
 
     //writers
@@ -276,7 +276,7 @@ public class Extractor {
                 campaignReportWriter.writeAllResults(CampaignReportWrapper.Builder.build(reps, cId));
 
             }
-            System.out.println("Downloading RAW data.");
+            System.out.println("Downloading RAW data. For " + campaignIds.size() + " campaigns.");
             /*Retrieve data using RAW functions*/
             append = true;
             for (String cId : campaignIds) {
