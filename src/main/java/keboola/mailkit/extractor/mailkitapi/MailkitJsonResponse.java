@@ -96,7 +96,7 @@ public class MailkitJsonResponse implements MailkitResponse {
 	}
 
 	private boolean isEmptyObj() {
-		return StringUtils.isEmpty(this.longResponse);
+		return "{}".equals(this.longResponse);
 	}
 
 	public String getLongResponse() {
