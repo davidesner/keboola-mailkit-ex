@@ -136,16 +136,18 @@ private String s_org;
 private String s_browser;
 @JsonProperty("s_os")
 private String s_os;
+@JsonProperty("preview_url")
+private String preview_url;
 
 /**
 * No args constructor for use in serialization
-* 
+*
 */
 public RawMessage() {
 }
 
 /**
-* 
+*
 * @param phone
 * @param reply_to
 * @param message_status
@@ -210,8 +212,9 @@ public RawMessage() {
 * @param iD_user_list
 * @param tld
 * @param full_name
+* @param preview_url
 */
-public RawMessage(String iD_message, String iD_send, String iD_send_message, String iD_user_list, String iD_email, String iD_template, String type_message, String email, String email_date, String message_date, String date_sent, String ab_version, String message_status, String tld, String domain, String custom_1, String custom_2, String custom_3, String custom_4, String custom_5, String custom_6, String custom_7, String custom_8, String custom_9, String custom_10, String custom_11, String custom_12, String custom_13, String custom_14, String custom_15, String custom_16, String custom_17, String custom_18, String custom_19, String custom_20, String custom_21, String custom_22, String custom_23, String custom_24, String custom_25, String prefix, String vocative, String first_name, String last_name, String full_name, String nick_name, String gender, String reply_to, String company, String street, String city, String state, String country, String zip, String phone, String mobile, String fax, String s_continent, String s_country, String s_region, String s_city, String s_org, String s_browser, String s_os) {
+public RawMessage(String iD_message, String iD_send, String iD_send_message, String iD_user_list, String iD_email, String iD_template, String type_message, String email, String email_date, String message_date, String date_sent, String ab_version, String message_status, String tld, String domain, String custom_1, String custom_2, String custom_3, String custom_4, String custom_5, String custom_6, String custom_7, String custom_8, String custom_9, String custom_10, String custom_11, String custom_12, String custom_13, String custom_14, String custom_15, String custom_16, String custom_17, String custom_18, String custom_19, String custom_20, String custom_21, String custom_22, String custom_23, String custom_24, String custom_25, String prefix, String vocative, String first_name, String last_name, String full_name, String nick_name, String gender, String reply_to, String company, String street, String city, String state, String country, String zip, String phone, String mobile, String fax, String s_continent, String s_country, String s_region, String s_city, String s_org, String s_browser, String s_os, String preview_url) {
 super();
 this.ID_message = iD_message;
 this.ID_send = iD_send;
@@ -277,6 +280,7 @@ this.s_city = s_city;
 this.s_org = s_org;
 this.s_browser = s_browser;
 this.s_os = s_os;
+this.preview_url = preview_url;
 }
 
 @JsonProperty("ID_message")
@@ -917,6 +921,16 @@ return s_os;
 @JsonProperty("s_os")
 public void setS_os(String s_os) {
 this.s_os = s_os;
+}
+
+@JsonProperty("preview_url")
+public String getPreview_url() {
+return preview_url;
+}
+
+@JsonProperty("preview_url")
+public void setPreview_url(String preview_url) {
+this.preview_url = preview_url;
 }
 
 }
