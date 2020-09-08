@@ -2,16 +2,12 @@
  */
 package keboola.mailkit.extractor.mailkitapi;
 
-import java.io.File;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import keboola.mailkit.extractor.mailkitapi.requests.MailkitRequest;
-import keboola.mailkit.extractor.mailkitapi.requests.MailkitXmlRpcRequest;
+
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
@@ -22,6 +18,8 @@ import org.apache.xmlrpc.serializer.TypeSerializer;
 import org.apache.xmlrpc.serializer.TypeSerializerImpl;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
+
+import keboola.mailkit.extractor.mailkitapi.requests.MailkitRequest;
 
 /**
  *
@@ -80,7 +78,9 @@ public class MailkitXmlRpcAPIClient implements MailkitClient {
         Object result;
         MailkitResponse xmlResp = null;
         try {
+        	System.out.println("Sending req campListResponse: " + Arrays.toString(params.toArray()));
             result = xmlRpcClient.execute(req.getFunction(), params);
+            System.out.println("Debug campListResponse: " + result);
             xmlResp = XmlRpcResponseFactory.getResponse(result, req.getClass());
 
         } catch (XmlRpcException | ClientException ex) {
