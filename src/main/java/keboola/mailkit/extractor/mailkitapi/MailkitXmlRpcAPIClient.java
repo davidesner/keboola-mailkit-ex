@@ -7,6 +7,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
@@ -79,6 +81,8 @@ public class MailkitXmlRpcAPIClient implements MailkitClient {
         MailkitResponse xmlResp = null;
         try {
         	System.out.println("Sending req campListResponse: " + Arrays.toString(params.toArray()));
+        	Logger logger = Logger.getLogger(MailkitXmlRpcAPIClient.class.getName());
+        	logger.setLevel(Level.INFO);
             result = xmlRpcClient.execute(req.getFunction(), params);
             System.out.println("Debug campListResponse: " + result);
             xmlResp = XmlRpcResponseFactory.getResponse(result, req.getClass());
