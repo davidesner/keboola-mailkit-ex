@@ -102,6 +102,7 @@ public class MailkitXmlRpcAPIClient implements MailkitClient {
             xmlResp = XmlRpcResponseFactory.getResponse(result, req.getClass());
 
         } catch (XmlRpcException | ClientException ex) {
+        	ex.printStackTrace();
             throw new ClientException("Error sending request to API. " + ex.getLocalizedMessage());
         } catch (RuntimeException ex) {
             throw new ClientException("Runtime error. " + ex.getLocalizedMessage());
