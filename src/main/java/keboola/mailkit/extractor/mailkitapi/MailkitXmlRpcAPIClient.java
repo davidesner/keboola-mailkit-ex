@@ -7,12 +7,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
+import org.apache.xmlrpc.client.XmlRpcTransport;
+import org.apache.xmlrpc.client.XmlRpcTransportFactory;
 import org.apache.xmlrpc.common.TypeFactoryImpl;
 import org.apache.xmlrpc.common.XmlRpcController;
 import org.apache.xmlrpc.common.XmlRpcStreamConfig;
@@ -49,9 +51,21 @@ public class MailkitXmlRpcAPIClient implements MailkitClient {
 
         XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
         config.setServerURL(new URL(ENDPOINT_URL));
-
+        final XmlRpcTransportFactory transportFactory = new XmlRpcTransportFactory()
+        {
+            public XmlRpcTransport getTransport()
+            {
+                return new MessageLoggingTransport(xmlRpcClient);
+            }
+        };
+        
         xmlRpcClient = new XmlRpcClient();
+        xmlRpcClient.setTransportFactory(transportFactory);
+        
         xmlRpcClient.setConfig(config);
+        
+
+        
 //        xmlRpcClient.setTypeFactory(new MyTypeFactory(xmlRpcClient));
 //        final XmlRpcTransportFactory transportFactory = new XmlRpcTransportFactory() {
 //            public XmlRpcTransport getTransport() {
@@ -81,8 +95,8 @@ public class MailkitXmlRpcAPIClient implements MailkitClient {
         MailkitResponse xmlResp = null;
         try {
         	System.out.println("Sending req campListResponse: " + Arrays.toString(params.toArray()));
-        	Logger logger = Logger.getLogger(MailkitXmlRpcAPIClient.class.getName());
-        	logger.setLevel(Level.ALL);
+        	Logger logger = LogManager.getLogger(MailkitXmlRpcAPIClient.class);
+        	logger.debug("test");
             result = xmlRpcClient.execute(req.getFunction(), params);
             System.out.println("Debug campListResponse: " + result);
             xmlResp = XmlRpcResponseFactory.getResponse(result, req.getClass());
