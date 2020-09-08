@@ -82,7 +82,7 @@ public class MailkitXmlRpcAPIClient implements MailkitClient {
         try {
         	System.out.println("Sending req campListResponse: " + Arrays.toString(params.toArray()));
         	Logger logger = Logger.getLogger(MailkitXmlRpcAPIClient.class.getName());
-        	logger.setLevel(Level.INFO);
+        	logger.setLevel(Level.ALL);
             result = xmlRpcClient.execute(req.getFunction(), params);
             System.out.println("Debug campListResponse: " + result);
             xmlResp = XmlRpcResponseFactory.getResponse(result, req.getClass());
