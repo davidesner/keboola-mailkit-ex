@@ -11,7 +11,7 @@ public class RawMessages extends MailkitJsonRequest {
 
     /**
      *
-     * @param idMessage - Campaign ID
+     * @param idMessage - CampaignList ID
      * @param idSendMessage
      * @param idSend - ID of last record to start the iteration, if records
      * retrieved from the start

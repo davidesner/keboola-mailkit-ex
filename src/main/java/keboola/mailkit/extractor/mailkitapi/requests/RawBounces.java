@@ -11,7 +11,7 @@ public class RawBounces extends MailkitJsonRequest {
 
     /**
      *
-     * @param idMessage - Campaign ID
+     * @param idMessage - CampaignList ID
      * @param idSend -
      * @param idLog ID of last record to start the iteration, if records
      * retrieved from the start

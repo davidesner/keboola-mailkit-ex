@@ -11,7 +11,7 @@ public class RawResponses extends MailkitJsonRequest {
 
     /**
      *
-     * @param idMessage - Campaign ID
+     * @param idMessage - CampaignList ID
      * @param idSendMessage
      * @param idSend -
      * @param idLog ID of last record to start the iteration, if records

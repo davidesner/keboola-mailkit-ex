@@ -1,10 +1,7 @@
 package keboola.mailkit.extractor;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -17,8 +14,6 @@ import java.util.logging.Logger;
 
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
-import org.supercsv.io.CsvMapWriter;
-import org.supercsv.prefs.CsvPreference;
 
 import esnerda.keboola.components.result.IResultWriter;
 import esnerda.keboola.components.result.impl.DefaultBeanResultWriter;
@@ -31,12 +26,9 @@ import keboola.mailkit.extractor.mailkitapi.ClientException;
 import keboola.mailkit.extractor.mailkitapi.MailkitJsonAPIClient;
 import keboola.mailkit.extractor.mailkitapi.MailkitJsonResponse;
 import keboola.mailkit.extractor.mailkitapi.MailkitResponse;
-import keboola.mailkit.extractor.mailkitapi.MailkitXmlRpcAPIClient;
-import keboola.mailkit.extractor.mailkitapi.XmlRpcCampaignListResponse;
-import keboola.mailkit.extractor.mailkitapi.requests.CampaignListXmlRpc;
+import keboola.mailkit.extractor.mailkitapi.requests.CampaignList;
 import keboola.mailkit.extractor.mailkitapi.requests.MailkitJsonRequest;
 import keboola.mailkit.extractor.mailkitapi.requests.MailkitRequest;
-import keboola.mailkit.extractor.mailkitapi.requests.MailkitXmlRpcRequest;
 import keboola.mailkit.extractor.mailkitapi.requests.MsgBounces;
 import keboola.mailkit.extractor.mailkitapi.requests.MsgFeedback;
 import keboola.mailkit.extractor.mailkitapi.requests.MsgLinks;
@@ -48,6 +40,7 @@ import keboola.mailkit.extractor.mailkitapi.requests.RawResponses;
 import keboola.mailkit.extractor.mailkitapi.requests.Report;
 import keboola.mailkit.extractor.mailkitapi.requests.ReportCampaign;
 import keboola.mailkit.extractor.mailkitapi.requests.ReportMessage;
+import keboola.mailkit.extractor.mailkitapi.response.CampaignResp;
 import keboola.mailkit.extractor.mailkitapi.response.MsgBouncesResp;
 import keboola.mailkit.extractor.mailkitapi.response.MsgFeedbackResp;
 import keboola.mailkit.extractor.mailkitapi.response.MsgLinksResp;
@@ -95,6 +88,7 @@ public class Extractor {
 	private static IResultWriter<ReportMsgWrapper> msgReportWriter;
 	private static IResultWriter<MsgLinksWrapper> msgLinksWriter;
 	private static IResultWriter<MsgLinkVisitorWrapper> msgLinkVisitorsWriter;
+	private static IResultWriter<CampaignResp> campaignWriter;
 
 	public static void main(String[] args) {
 
@@ -171,61 +165,7 @@ public class Extractor {
 
 		System.out.println("Download started with range parameters: dateFrom:"
 				+ config.getParams().getDateFrom() + ", dateTo:" + config.getParams().getDateTo());
-		// get campaign list via xml rpc endpoint if requested
-		if (config.getParams().getDatasets()
-				.contains(KBCParameters.REQUEST_TYPE.CAMPAIGNS.name())) {
-
-			System.out.println("Downloading campaigns.");
-			XmlRpcCampaignListResponse res = null;
-			try {
-				MailkitXmlRpcAPIClient xmlClient = new MailkitXmlRpcAPIClient(
-						config.getParams().getClientId(), config.getParams().getClientMd5());
-				MailkitXmlRpcRequest rq = new CampaignListXmlRpc(null);
-
-				res = (XmlRpcCampaignListResponse) xmlClient.executeRequest(rq, LOG);
-				checkResponseStatus(res, rq);
-
-			} catch (ClientException ex) {
-				System.err.println(ex.getMessage());
-				System.exit(ex.getSeverity());
-			} catch (MalformedURLException ex) {
-				System.err.println(ex.getMessage());
-				System.exit(2);
-			}
-
-			/* Write campaigns csv */
-			File campaignsFile = new File(outTablesPath + File.separator + "campaigns.csv");
-			CsvMapWriter mapWriter = null;
-			List<String> campaignIdsAll = new ArrayList();
-
-			try {
-				mapWriter = new CsvMapWriter(new BufferedWriter(new FileWriter(campaignsFile)),
-						CsvPreference.STANDARD_PREFERENCE);
-				final String[] header = res.getResponseData()[0].keySet().toArray(new String[0]);
-				final CellProcessor[] processors = getProcessors(header.length);
-
-				// write the header
-				mapWriter.writeHeader(header);
-				// write to file
-				for (Map row : res.getResponseData()) {
-					campaignIdsAll.add((String) row.get("ID_MESSAGE").toString());
-					mapWriter.write(row, header, processors);
-				}
-			} catch (IOException ex) {
-				System.err.println(ex.getMessage());
-				System.exit(1);
-			} catch (RuntimeException re) {
-				re.printStackTrace();
-				System.exit(1);
-			} finally {
-				try {
-					mapWriter.close();
-				} catch (Exception ex) {
-				}
-			}
-
-		}
-
+		
 		/* Get datasets from JsonApi */
 		List<String> campaignIds = new ArrayList<>();
 		MailkitJsonResponse jsResp;
@@ -238,6 +178,42 @@ public class Extractor {
 		}
 		/* Get REPORT dataset */
 		try {
+			// Get Campaigns
+			if (config.getParams().getDatasets()
+					.contains(KBCParameters.REQUEST_TYPE.CAMPAIGNS.name())) {
+				System.out.println("Downloading campaigns.");
+				jsonRq = new CampaignList(null);
+				jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
+				checkResponseStatus(jsResp, jsonRq);
+				/* process Campaign */
+				try {
+					List<CampaignResp> reps = jsResp.getResponseObject(CampaignResp.class);
+		      		campaignWriter.writeAllResults(reps);
+				} catch (Exception ex) {
+					Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+			
+			
+			if (config.getParams().getDatasets()
+					.contains(KBCParameters.REQUEST_TYPE.REPORT.name())) {
+				System.out.println("Downloading summary report.");
+				jsonRq = new Report(config.getParams().getDateFrom(),
+						config.getParams().getDateTo());
+				jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
+				checkResponseStatus(jsResp, jsonRq);
+				/* process REPORT */
+				try {
+					List<ReportResp> reps = jsResp.getResponseObject(ReportResp.class);
+					for (ReportResp rp : reps) {
+						campaignIds.add(rp.getID_MESSAGE().toString());
+					}
+					reportWriter.writeAllResults(reps);
+				} catch (Exception ex) {
+					Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+			
 			if (config.getParams().getDatasets()
 					.contains(KBCParameters.REQUEST_TYPE.REPORT.name())) {
 				System.out.println("Downloading summary report.");
@@ -636,8 +612,18 @@ public class Extractor {
 	private static void initWriters(KBCConfig config, String outTablesPath) throws Exception {
 		campaignReportWriter = new DefaultBeanResultWriter<>("campaignReports.csv", null);
 		campaignReportWriter.initWriter(outTablesPath, CampaignReportWrapper.class);
+		
+
 
 		Set<String> datasetsToGet = config.getParams().getDatasets();
+		
+		
+		
+		if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.CAMPAIGNS.name())) {
+			campaignWriter  = new DefaultBeanResultWriter<>("campaigns.csv", null);
+			campaignWriter.initWriter(outTablesPath, CampaignResp.class);
+		}
+		
 		if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.REPORT.name())) {
 			reportWriter = new DefaultBeanResultWriter<>("summaryReport.csv", null);
 			reportWriter.initWriter(outTablesPath,
