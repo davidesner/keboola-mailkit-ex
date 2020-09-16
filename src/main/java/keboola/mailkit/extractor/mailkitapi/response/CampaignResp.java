@@ -1,12 +1,8 @@
 package keboola.mailkit.extractor.mailkitapi.response;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -18,43 +14,41 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class CampaignResp {
 
 	@JsonProperty("NAME")
-	private String nAME;
+	private String NAME;
 	@JsonProperty("ID_MESSAGE")
-	private int iDMESSAGE;
+	private int ID_MESSAGE;
 	@JsonProperty("SUBJECT")
-	private String sUBJECT;
+	private String SUBJECT;
 	@JsonProperty("SUBJECT_B")
-	private String sUBJECTB;
+	private String SUBJECT_B;
 	@JsonProperty("MSG_TYPE")
-	private String mSGTYPE;
+	private String MSG_TYPE;
 	@JsonProperty("CAMPAIGN_TYPE")
-	private String cAMPAIGNTYPE;
+	private String CAMPAIGN_TYPE;
 	@JsonProperty("USE_AB")
-	private boolean uSEAB;
+	private boolean USE_AB;
 	@JsonProperty("TEST_MODE")
-	private boolean tESTMODE;
+	private boolean TEST_MODE;
 	@JsonProperty("SEND_DATE")
-	private String sENDDATE;
+	private String SEND_DATE;
 	@JsonProperty("TIME_ZONE")
-	private String tIMEZONE;
+	private String TIME_ZONE;
 	@JsonProperty("LAST_SENT")
-	private String lASTSENT;
+	private String LAST_SENT;
 	@JsonProperty("REPEAT")
-	private boolean rEPEAT;
+	private boolean REPEAT;
 	@JsonProperty("REPEAT_COUNT")
-	private int rEPEATCOUNT;
+	private int REPEAT_COUNT;
 	@JsonProperty("PERIOD")
-	private String pERIOD;
+	private String PERIOD;
 	@JsonProperty("DAYS")
-	private String dAYS;
+	private String DAYS;
 	@JsonProperty("STATUS")
-	private String sTATUS;
+	private String STATUS;
 	@JsonProperty("TYPE")
-	private String tYPE;
+	private String TYPE;
 	@JsonProperty("USER_LIST")
-	private List<Integer> uSERLIST = null;
-	@JsonIgnore
-	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+	private List<Integer> USER_LIST = null;
 
 	/**
 	 * No args constructor for use in serialization
@@ -65,238 +59,228 @@ public class CampaignResp {
 
 	/**
 	 *
-	 * @param rEPEAT
-	 * @param mSGTYPE
-	 * @param cAMPAIGNTYPE
-	 * @param tESTMODE
-	 * @param sTATUS
-	 * @param rEPEATCOUNT
-	 * @param tYPE
-	 * @param pERIOD
-	 * @param sUBJECT
-	 * @param lASTSENT
-	 * @param tIMEZONE
-	 * @param nAME
-	 * @param dAYS
-	 * @param iDMESSAGE
-	 * @param sENDDATE
-	 * @param sUBJECTB
-	 * @param uSERLIST
-	 * @param uSEAB
+	 * @param SUBJECT_B
+	 * @param USE_AB
+	 * @param REPEAT
+	 * @param TIME_ZONE
+	 * @param REPEAT_COUNT
+	 * @param LAST_SENT
+	 * @param STATUS
+	 * @param TYPE
+	 * @param ID_MESSAGE
+	 * @param PERIOD
+	 * @param USER_LIST
+	 * @param SUBJECT
+	 * @param MSG_TYPE
+	 * @param NAME
+	 * @param CAMPAIGN_TYPE
+	 * @param DAYS
+	 * @param SEND_DATE
+	 * @param TEST_MODE
 	 */
-	public CampaignResp(String nAME, int iDMESSAGE, String sUBJECT, String sUBJECTB, String mSGTYPE,
-			String cAMPAIGNTYPE, boolean uSEAB, boolean tESTMODE, String sENDDATE, String tIMEZONE,
-			String lASTSENT, boolean rEPEAT, int rEPEATCOUNT, String pERIOD, String dAYS,
-			String sTATUS, String tYPE, List<Integer> uSERLIST) {
+	public CampaignResp(String nAME, int iD_MESSAGE, String sUBJECT, String sUBJECT_B,
+			String mSG_TYPE, String cAMPAIGN_TYPE, boolean uSE_AB, boolean tEST_MODE,
+			String sEND_DATE, String tIME_ZONE, String lAST_SENT, boolean rEPEAT, int rEPEAT_COUNT,
+			String pERIOD, String dAYS, String sTATUS, String tYPE, List<Integer> uSER_LIST) {
 		super();
-		this.nAME = nAME;
-		this.iDMESSAGE = iDMESSAGE;
-		this.sUBJECT = sUBJECT;
-		this.sUBJECTB = sUBJECTB;
-		this.mSGTYPE = mSGTYPE;
-		this.cAMPAIGNTYPE = cAMPAIGNTYPE;
-		this.uSEAB = uSEAB;
-		this.tESTMODE = tESTMODE;
-		this.sENDDATE = sENDDATE;
-		this.tIMEZONE = tIMEZONE;
-		this.lASTSENT = lASTSENT;
-		this.rEPEAT = rEPEAT;
-		this.rEPEATCOUNT = rEPEATCOUNT;
-		this.pERIOD = pERIOD;
-		this.dAYS = dAYS;
-		this.sTATUS = sTATUS;
-		this.tYPE = tYPE;
-		this.uSERLIST = uSERLIST;
+		this.NAME = nAME;
+		this.ID_MESSAGE = iD_MESSAGE;
+		this.SUBJECT = sUBJECT;
+		this.SUBJECT_B = sUBJECT_B;
+		this.MSG_TYPE = mSG_TYPE;
+		this.CAMPAIGN_TYPE = cAMPAIGN_TYPE;
+		this.USE_AB = uSE_AB;
+		this.TEST_MODE = tEST_MODE;
+		this.SEND_DATE = sEND_DATE;
+		this.TIME_ZONE = tIME_ZONE;
+		this.LAST_SENT = lAST_SENT;
+		this.REPEAT = rEPEAT;
+		this.REPEAT_COUNT = rEPEAT_COUNT;
+		this.PERIOD = pERIOD;
+		this.DAYS = dAYS;
+		this.STATUS = sTATUS;
+		this.TYPE = tYPE;
+		this.USER_LIST = uSER_LIST;
 	}
 
 	@JsonProperty("NAME")
 	public String getNAME() {
-		return nAME;
+		return NAME;
 	}
 
 	@JsonProperty("NAME")
 	public void setNAME(String nAME) {
-		this.nAME = nAME;
+		this.NAME = nAME;
 	}
 
 	@JsonProperty("ID_MESSAGE")
-	public int getIDMESSAGE() {
-		return iDMESSAGE;
+	public int getID_MESSAGE() {
+		return ID_MESSAGE;
 	}
 
 	@JsonProperty("ID_MESSAGE")
-	public void setIDMESSAGE(int iDMESSAGE) {
-		this.iDMESSAGE = iDMESSAGE;
+	public void setID_MESSAGE(int iD_MESSAGE) {
+		this.ID_MESSAGE = iD_MESSAGE;
 	}
 
 	@JsonProperty("SUBJECT")
 	public String getSUBJECT() {
-		return sUBJECT;
+		return SUBJECT;
 	}
 
 	@JsonProperty("SUBJECT")
 	public void setSUBJECT(String sUBJECT) {
-		this.sUBJECT = sUBJECT;
+		this.SUBJECT = sUBJECT;
 	}
 
 	@JsonProperty("SUBJECT_B")
-	public String getSUBJECTB() {
-		return sUBJECTB;
+	public String getSUBJECT_B() {
+		return SUBJECT_B;
 	}
 
 	@JsonProperty("SUBJECT_B")
-	public void setSUBJECTB(String sUBJECTB) {
-		this.sUBJECTB = sUBJECTB;
+	public void setSUBJECT_B(String sUBJECT_B) {
+		this.SUBJECT_B = sUBJECT_B;
 	}
 
 	@JsonProperty("MSG_TYPE")
-	public String getMSGTYPE() {
-		return mSGTYPE;
+	public String getMSG_TYPE() {
+		return MSG_TYPE;
 	}
 
 	@JsonProperty("MSG_TYPE")
-	public void setMSGTYPE(String mSGTYPE) {
-		this.mSGTYPE = mSGTYPE;
+	public void setMSG_TYPE(String mSG_TYPE) {
+		this.MSG_TYPE = mSG_TYPE;
 	}
 
 	@JsonProperty("CAMPAIGN_TYPE")
-	public String getCAMPAIGNTYPE() {
-		return cAMPAIGNTYPE;
+	public String getCAMPAIGN_TYPE() {
+		return CAMPAIGN_TYPE;
 	}
 
 	@JsonProperty("CAMPAIGN_TYPE")
-	public void setCAMPAIGNTYPE(String cAMPAIGNTYPE) {
-		this.cAMPAIGNTYPE = cAMPAIGNTYPE;
+	public void setCAMPAIGN_TYPE(String cAMPAIGN_TYPE) {
+		this.CAMPAIGN_TYPE = cAMPAIGN_TYPE;
 	}
 
 	@JsonProperty("USE_AB")
-	public boolean isUSEAB() {
-		return uSEAB;
+	public boolean isUSE_AB() {
+		return USE_AB;
 	}
 
 	@JsonProperty("USE_AB")
-	public void setUSEAB(boolean uSEAB) {
-		this.uSEAB = uSEAB;
+	public void setUSE_AB(boolean uSE_AB) {
+		this.USE_AB = uSE_AB;
 	}
 
 	@JsonProperty("TEST_MODE")
-	public boolean isTESTMODE() {
-		return tESTMODE;
+	public boolean isTEST_MODE() {
+		return TEST_MODE;
 	}
 
 	@JsonProperty("TEST_MODE")
-	public void setTESTMODE(boolean tESTMODE) {
-		this.tESTMODE = tESTMODE;
+	public void setTEST_MODE(boolean tEST_MODE) {
+		this.TEST_MODE = tEST_MODE;
 	}
 
 	@JsonProperty("SEND_DATE")
-	public String getSENDDATE() {
-		return sENDDATE;
+	public String getSEND_DATE() {
+		return SEND_DATE;
 	}
 
 	@JsonProperty("SEND_DATE")
-	public void setSENDDATE(String sENDDATE) {
-		this.sENDDATE = sENDDATE;
+	public void setSEND_DATE(String sEND_DATE) {
+		this.SEND_DATE = sEND_DATE;
 	}
 
 	@JsonProperty("TIME_ZONE")
-	public String getTIMEZONE() {
-		return tIMEZONE;
+	public String getTIME_ZONE() {
+		return TIME_ZONE;
 	}
 
 	@JsonProperty("TIME_ZONE")
-	public void setTIMEZONE(String tIMEZONE) {
-		this.tIMEZONE = tIMEZONE;
+	public void setTIME_ZONE(String tIME_ZONE) {
+		this.TIME_ZONE = tIME_ZONE;
 	}
 
 	@JsonProperty("LAST_SENT")
-	public String getLASTSENT() {
-		return lASTSENT;
+	public String getLAST_SENT() {
+		return LAST_SENT;
 	}
 
 	@JsonProperty("LAST_SENT")
-	public void setLASTSENT(String lASTSENT) {
-		this.lASTSENT = lASTSENT;
+	public void setLAST_SENT(String lAST_SENT) {
+		this.LAST_SENT = lAST_SENT;
 	}
 
 	@JsonProperty("REPEAT")
 	public boolean isREPEAT() {
-		return rEPEAT;
+		return REPEAT;
 	}
 
 	@JsonProperty("REPEAT")
 	public void setREPEAT(boolean rEPEAT) {
-		this.rEPEAT = rEPEAT;
+		this.REPEAT = rEPEAT;
 	}
 
 	@JsonProperty("REPEAT_COUNT")
-	public int getREPEATCOUNT() {
-		return rEPEATCOUNT;
+	public int getREPEAT_COUNT() {
+		return REPEAT_COUNT;
 	}
 
 	@JsonProperty("REPEAT_COUNT")
-	public void setREPEATCOUNT(int rEPEATCOUNT) {
-		this.rEPEATCOUNT = rEPEATCOUNT;
+	public void setREPEAT_COUNT(int rEPEAT_COUNT) {
+		this.REPEAT_COUNT = rEPEAT_COUNT;
 	}
 
 	@JsonProperty("PERIOD")
 	public String getPERIOD() {
-		return pERIOD;
+		return PERIOD;
 	}
 
 	@JsonProperty("PERIOD")
 	public void setPERIOD(String pERIOD) {
-		this.pERIOD = pERIOD;
+		this.PERIOD = pERIOD;
 	}
 
 	@JsonProperty("DAYS")
 	public String getDAYS() {
-		return dAYS;
+		return DAYS;
 	}
 
 	@JsonProperty("DAYS")
 	public void setDAYS(String dAYS) {
-		this.dAYS = dAYS;
+		this.DAYS = dAYS;
 	}
 
 	@JsonProperty("STATUS")
 	public String getSTATUS() {
-		return sTATUS;
+		return STATUS;
 	}
 
 	@JsonProperty("STATUS")
 	public void setSTATUS(String sTATUS) {
-		this.sTATUS = sTATUS;
+		this.STATUS = sTATUS;
 	}
 
 	@JsonProperty("TYPE")
 	public String getTYPE() {
-		return tYPE;
+		return TYPE;
 	}
 
 	@JsonProperty("TYPE")
 	public void setTYPE(String tYPE) {
-		this.tYPE = tYPE;
+		this.TYPE = tYPE;
 	}
 
 	@JsonProperty("USER_LIST")
-	public List<Integer> getUSERLIST() {
-		return uSERLIST;
+	public String getUSER_LIST() {
+		return USER_LIST.stream().map(String::valueOf).collect(Collectors.joining(","));
 	}
 
 	@JsonProperty("USER_LIST")
-	public void setUSERLIST(List<Integer> uSERLIST) {
-		this.uSERLIST = uSERLIST;
-	}
-
-	@JsonAnyGetter
-	public Map<String, Object> getAdditionalProperties() {
-		return this.additionalProperties;
-	}
-
-	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value) {
-		this.additionalProperties.put(name, value);
+	public void setUSER_LIST(List<Integer> uSER_LIST) {
+		this.USER_LIST = uSER_LIST;
 	}
 
 }
