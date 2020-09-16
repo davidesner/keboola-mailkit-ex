@@ -164,8 +164,8 @@ public class CampaignResp {
 	}
 
 	@JsonProperty("USE_AB")
-	public boolean isUSE_AB() {
-		return USE_AB;
+	public String getUSE_AB() {
+		return USE_AB ? "TRUE" : "FALSE";
 	}
 
 	@JsonProperty("USE_AB")
@@ -174,8 +174,8 @@ public class CampaignResp {
 	}
 
 	@JsonProperty("TEST_MODE")
-	public boolean isTEST_MODE() {
-		return TEST_MODE;
+	public String getTEST_MODE() {
+		return TEST_MODE ? "TRUE" : "FALSE";
 	}
 
 	@JsonProperty("TEST_MODE")
@@ -214,8 +214,8 @@ public class CampaignResp {
 	}
 
 	@JsonProperty("REPEAT")
-	public boolean isREPEAT() {
-		return REPEAT;
+	public String getREPEAT() {
+		return REPEAT ? "TRUE" : "FALSE";
 	}
 
 	@JsonProperty("REPEAT")
