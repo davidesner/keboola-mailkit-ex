@@ -275,7 +275,10 @@ public class CampaignResp {
 
 	@JsonProperty("USER_LIST")
 	public String getUSER_LIST() {
-		return USER_LIST.stream().map(String::valueOf).collect(Collectors.joining(","));
+		if (this.USER_LIST != null) {
+			return USER_LIST.stream().map(String::valueOf).collect(Collectors.joining(","));
+		}
+		return "";
 	}
 
 	@JsonProperty("USER_LIST")

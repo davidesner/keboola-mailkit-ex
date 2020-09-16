@@ -165,7 +165,7 @@ public class Extractor {
 
 		System.out.println("Download started with range parameters: dateFrom:"
 				+ config.getParams().getDateFrom() + ", dateTo:" + config.getParams().getDateTo());
-		
+
 		/* Get datasets from JsonApi */
 		List<String> campaignIds = new ArrayList<>();
 		MailkitJsonResponse jsResp;
@@ -188,13 +188,12 @@ public class Extractor {
 				/* process Campaign */
 				try {
 					List<CampaignResp> reps = jsResp.getResponseObject(CampaignResp.class);
-		      		campaignWriter.writeAllResults(reps);
+					campaignWriter.writeAllResults(reps);
 				} catch (Exception ex) {
 					Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			}
-			
-			
+
 			if (config.getParams().getDatasets()
 					.contains(KBCParameters.REQUEST_TYPE.REPORT.name())) {
 				System.out.println("Downloading summary report.");
@@ -213,7 +212,7 @@ public class Extractor {
 					Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			}
-			
+
 			if (config.getParams().getDatasets()
 					.contains(KBCParameters.REQUEST_TYPE.REPORT.name())) {
 				System.out.println("Downloading summary report.");
@@ -612,18 +611,15 @@ public class Extractor {
 	private static void initWriters(KBCConfig config, String outTablesPath) throws Exception {
 		campaignReportWriter = new DefaultBeanResultWriter<>("campaignReports.csv", null);
 		campaignReportWriter.initWriter(outTablesPath, CampaignReportWrapper.class);
-		
-
 
 		Set<String> datasetsToGet = config.getParams().getDatasets();
-		
-		
-		
-		if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.CAMPAIGNS.name())) {
-			campaignWriter  = new DefaultBeanResultWriter<>("campaigns.csv", null);
+
+		if (config.getParams().getDatasets()
+				.contains(KBCParameters.REQUEST_TYPE.CAMPAIGNS.name())) {
+			campaignWriter = new DefaultBeanResultWriter<>("campaigns.csv", null);
 			campaignWriter.initWriter(outTablesPath, CampaignResp.class);
 		}
-		
+
 		if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.REPORT.name())) {
 			reportWriter = new DefaultBeanResultWriter<>("summaryReport.csv", null);
 			reportWriter.initWriter(outTablesPath,
