@@ -546,6 +546,11 @@ public class Extractor {
 		campaignReportWriter.closeAndRetrieveMetadata();
 
 		Set<String> datasetsToGet = config.getParams().getDatasets();
+		if (config.getParams().getDatasets()
+				.contains(KBCParameters.REQUEST_TYPE.CAMPAIGNS.name())) {
+			campaignWriter.closeAndRetrieveMetadata();
+		}
+
 		if (config.getParams().getDatasets().contains(KBCParameters.REQUEST_TYPE.REPORT.name())) {
 			reportWriter.closeAndRetrieveMetadata();
 		}
