@@ -157,6 +157,7 @@ public class MailkitJsonAPIClient implements MailkitClient {
 			}
 
 		}
+		log = false;
 		if (log) {
 			FileInputStream fis = null;
 			BufferedWriter out = null;

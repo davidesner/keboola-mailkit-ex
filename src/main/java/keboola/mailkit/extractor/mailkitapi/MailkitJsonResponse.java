@@ -102,7 +102,7 @@ public class MailkitJsonResponse implements MailkitResponse {
 			return resp;
 		} catch (Exception e) {
 			System.err.println((responseTxt));
-			throw e;
+			throw new Exception("Failed to parse response"+responseTxt);
 		}
 		
 
