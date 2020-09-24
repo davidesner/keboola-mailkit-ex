@@ -73,7 +73,7 @@ import keboola.mailkit.extractor.utils.JsonToCsvConvertor;
 public class Extractor {
 
 	private final static int REQUEST_WAIT_INTERVAL = 0;
-	private final static boolean LOG = false;
+	private final static boolean LOG = true;
 	private final static String logName = "log.txt";
 
 	// writers
