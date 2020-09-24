@@ -87,23 +87,25 @@ public class MailkitJsonResponse implements MailkitResponse {
 			return res;
 		}
 		StringBuilder textBuilder = new StringBuilder();
-	    try (Reader reader = new BufferedReader(new InputStreamReader
-	      (getInputStream(), Charset.forName(StandardCharsets.UTF_8.name())))) {
-	        int c = 0;
-	        while ((c = reader.read()) != -1) {
-	            textBuilder.append((char) c);
-	        }
-	    }
-	    String responseTxt = textBuilder.toString();
-	    T resp = null;
-	    try {
-		resp =  mapper.readValue(new ByteArrayInputStream(responseTxt.getBytes()),
-				mapper.getTypeFactory().constructCollectionType(List.class, type));
-	    } catch(Exception e) {
-	    	System.err.println((responseTxt));
-	    	throw e;
-	    	}
+		try (Reader reader = new BufferedReader(new InputStreamReader(getInputStream(),
+				Charset.forName(StandardCharsets.UTF_8.name())))) {
+			int c = 0;
+			while ((c = reader.read()) != -1) {
+				textBuilder.append((char) c);
+			}
+		}
+		String responseTxt = textBuilder.toString();
+		List<T> resp = null;
+		try {
+			resp = mapper.readValue(new ByteArrayInputStream(responseTxt.getBytes()),
+					mapper.getTypeFactory().constructCollectionType(List.class, type));
+			return resp;
+		} catch (Exception e) {
+			System.err.println((responseTxt));
+			throw e;
+		}
 		
+
 	}
 
 	private boolean isSingleObj() {
