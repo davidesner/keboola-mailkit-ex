@@ -36,6 +36,8 @@ public class ReportMsgWrapper {
 	private String SEND_DATE;
 	@JsonProperty("CLICK_COUNT_U")
 	private String CLICK_COUNT_U;
+	@JsonProperty("UTM")
+	private String UTM;
 
 	/**
 	 * No args constructor for use in serialization
@@ -68,6 +70,7 @@ public class ReportMsgWrapper {
 		READ_COUNT_U = r.getREAD_COUNT_U();
 		SEND_DATE = r.getSEND_DATE();
 		CLICK_COUNT_U = r.getCLICK_COUNT_U();
+		UTM = r.getUTM();
 	}
 
 	public String getID_SEND() {
@@ -120,6 +123,10 @@ public class ReportMsgWrapper {
 
 	public String getCLICK_COUNT_U() {
 		return CLICK_COUNT_U;
+	}
+
+	public String getUTM() {
+		return UTM;
 	}
 
 	public static class Builder {
