@@ -213,24 +213,6 @@ public class Extractor {
 				}
 			}
 
-			if (config.getParams().getDatasets()
-					.contains(KBCParameters.REQUEST_TYPE.REPORT.name())) {
-				System.out.println("Downloading summary report.");
-				jsonRq = new Report(config.getParams().getDateFrom(),
-						config.getParams().getDateTo());
-				jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
-				checkResponseStatus(jsResp, jsonRq);
-				/* process REPORT */
-				try {
-					List<ReportResp> reps = jsResp.getResponseObject(ReportResp.class);
-					for (ReportResp rp : reps) {
-						campaignIds.add(rp.getID_MESSAGE().toString());
-					}
-					reportWriter.writeAllResults(reps);
-				} catch (Exception ex) {
-					Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
-				}
-			}
 			/* Check if campaign ids specified */
 			if (config.getParams().getCampaignIds() != null
 					&& config.getParams().getCampaignIds().size() > 0) {
