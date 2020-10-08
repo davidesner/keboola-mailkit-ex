@@ -217,7 +217,7 @@ public class Extractor {
 			/* Check if campaign ids specified */
 			if (config.getParams().getCampaignIds() != null
 					&& config.getParams().getCampaignIds().size() > 0) {
-				campaignIds = config.getParams().getCampaignIds();
+				campaignIds = new HashSet<>(config.getParams().getCampaignIds());
 			}
 
 			/* get all messages for each campaign */
