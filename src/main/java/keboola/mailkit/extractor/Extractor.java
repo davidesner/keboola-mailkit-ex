@@ -221,7 +221,7 @@ public class Extractor {
 			}
 
 			/* get all messages for each campaign */
-			List<String> sendIds = new ArrayList<>();
+			Set<String> sendIds = new HashSet<>();
 			int i = 0;
 			Map<String, String> keyCols = new HashMap<>();
 			boolean append = false;
