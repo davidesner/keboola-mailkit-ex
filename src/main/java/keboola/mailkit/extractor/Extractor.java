@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -167,7 +168,7 @@ public class Extractor {
 				+ config.getParams().getDateFrom() + ", dateTo:" + config.getParams().getDateTo());
 
 		/* Get datasets from JsonApi */
-		List<String> campaignIds = new ArrayList<>();
+		Set<String> campaignIds = new HashSet<>();
 		MailkitJsonResponse jsResp;
 		MailkitJsonRequest jsonRq;
 		JsonToCsvConvertor jc = new JsonToCsvConvertor();
