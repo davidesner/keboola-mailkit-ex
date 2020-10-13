@@ -178,18 +178,20 @@ public class MailkitJsonAPIClient implements MailkitClient {
 		}
 		httppost.setEntity(stringEntity);
 		CloseableHttpResponse response;
+		String rqString = httppost.toString() + " Request: " + stringEntity.toString();
 		try {
 			response = httpClient.execute(httppost);
 		} catch (IOException ex) {
-			throw new ClientException("Error sending request to API. " + ex.getLocalizedMessage());
+			throw new ClientException("Error sending request to API. " + ex.getLocalizedMessage()
+					+ " Method: " + rqString);
 		}
 		// check response code
 		int statusCode = response.getStatusLine().getStatusCode();
 		if (statusCode >= 300) {
 			if (statusCode != 404) {
-				throw new ClientException("API error executing function:" + req.getFunctionCall()
-						+ ". \n Http Response code:" + statusCode + " - "
-						+ response.getStatusLine().getReasonPhrase());
+				throw new ClientException(
+						"API error executing function:" + rqString + ". \n Http Response code:"
+								+ statusCode + " - " + response.getStatusLine().getReasonPhrase());
 			} else {
 
 			}
