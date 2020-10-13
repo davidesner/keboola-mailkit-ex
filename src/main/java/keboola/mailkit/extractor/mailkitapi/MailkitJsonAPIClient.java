@@ -10,23 +10,36 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.net.ssl.SSLException;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
+import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.http.client.ServiceUnavailableRetryStrategy;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
 import keboola.mailkit.extractor.mailkitapi.requests.MailkitRequest;
@@ -40,14 +53,19 @@ public class MailkitJsonAPIClient implements MailkitClient {
 
 	private static final String ENDPOINT_URL = "https://api.mailkit.eu/json.fcgi";
 
-	private final static long BACKOFF_INTERVAL = 500;
-	private final static int RETRIES = 5;
+	private static final int MAX_RETRIES = 15;
+	private static final long RETRY_INTERVAL = 5000;
+	private static final int[] RETRY_STATUS_CODES = {443, 500, 501, 502, 503, 504};
+	private static final int MAX_REQ_TIMEOUT = 60;
+
 
 	private final CloseableHttpClient httpClient;
 	private final String persistFolderPath;
 	private final String client_id;
 	private final String client_md5;
 	private File logFile;
+
+	private Logger logger;
 
 	/**
 	 * Mailkit Json Api client Uses Apache commons HttpClient and persists the
@@ -61,16 +79,79 @@ public class MailkitJsonAPIClient implements MailkitClient {
 	public MailkitJsonAPIClient(String client_id, String client_md5, String persistFolderPath) {
 		this.client_id = client_id;
 		this.client_md5 = client_md5;
-
+		this.logger = Logger.getLogger(MailkitJsonAPIClient.class.getName());
 		// set default headers
 		List<Header> headers = new ArrayList();
 		headers.add(new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"));
 		headers.add(new BasicHeader(HttpHeaders.ACCEPT, "application/json"));
-		this.httpClient = HttpClients.custom().setDefaultHeaders(headers).build();
+
+		RequestConfig config = RequestConfig.custom().setConnectTimeout(MAX_REQ_TIMEOUT * 1000)
+				.setConnectionRequestTimeout(MAX_REQ_TIMEOUT * 1000)
+				.setSocketTimeout(MAX_REQ_TIMEOUT * 1000).build();
+
+		HttpClientBuilder builder = HttpClientBuilder.create().setDefaultRequestConfig(config)
+				.setRetryHandler(getRetryHandler(MAX_RETRIES)).setServiceUnavailableRetryStrategy(
+						getServiceUnavailableRetryStrategy(MAX_RETRIES, RETRY_STATUS_CODES));
+		builder.setDefaultHeaders(headers);
+		this.httpClient = builder.build();
 
 		this.persistFolderPath = persistFolderPath;
 	}
 
+	  private HttpRequestRetryHandler getRetryHandler(int maxRetryCount){
+	        return (exception, executionCount, context) -> {
+
+	            logger.warning("Retrying for: " + executionCount + ". time");
+
+	            if (executionCount >= maxRetryCount) {
+	                // Do not retry if over max retry count
+	                return false;
+	            }
+	            if (exception instanceof InterruptedIOException) {
+	                // Timeout
+	            	return true;
+	            }
+	            if (exception instanceof UnknownHostException) {
+	                // Unknown host
+	                return false;
+	            }
+	            if (exception instanceof SSLException) {
+	                // SSL handshake exception
+	                return false;
+	            }
+	            HttpClientContext clientContext = HttpClientContext.adapt(context);
+	            HttpRequest request = clientContext.getRequest();
+	            boolean idempotent = !(request instanceof HttpEntityEnclosingRequest);
+	            if (idempotent) {
+	                // Retry if the request is considered idempotent
+	                return true;
+	            }
+	            return false;
+	        };
+	    }
+
+	    private ServiceUnavailableRetryStrategy getServiceUnavailableRetryStrategy(final int maxRetryCount, int[] allowedCodes){
+	    	return new ServiceUnavailableRetryStrategy() {
+	            @Override
+	            public boolean retryRequest(
+	                    final HttpResponse response, final int executionCount, final HttpContext context) {
+	                int statusCode = response.getStatusLine().getStatusCode();
+	                if (statusCode < 300) {
+	                	return false;
+	                }
+	                String urlPath = context.getAttribute("http.request").toString();
+	                urlPath = urlPath.substring(0, urlPath.indexOf("["));
+	                logger.warning(urlPath + " returned " + response.getStatusLine() + " Retrying for: " + executionCount + ". time");
+	                boolean isRetriable = Arrays.stream(allowedCodes).anyMatch(i -> i==statusCode);
+	                return isRetriable && executionCount < maxRetryCount;
+	            }
+
+	            @Override
+	            public long getRetryInterval() {
+	                return RETRY_INTERVAL;
+	            }
+	        };
+	    }
 	/**
 	 *
 	 * @param req
