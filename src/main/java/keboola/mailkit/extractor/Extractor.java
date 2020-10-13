@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -167,7 +168,7 @@ public class Extractor {
 				+ config.getParams().getDateFrom() + ", dateTo:" + config.getParams().getDateTo());
 
 		/* Get datasets from JsonApi */
-		List<String> campaignIds = new ArrayList<>();
+		Set<String> campaignIds = new HashSet<>();
 		MailkitJsonResponse jsResp;
 		MailkitJsonRequest jsonRq;
 		JsonToCsvConvertor jc = new JsonToCsvConvertor();
@@ -213,32 +214,14 @@ public class Extractor {
 				}
 			}
 
-			if (config.getParams().getDatasets()
-					.contains(KBCParameters.REQUEST_TYPE.REPORT.name())) {
-				System.out.println("Downloading summary report.");
-				jsonRq = new Report(config.getParams().getDateFrom(),
-						config.getParams().getDateTo());
-				jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
-				checkResponseStatus(jsResp, jsonRq);
-				/* process REPORT */
-				try {
-					List<ReportResp> reps = jsResp.getResponseObject(ReportResp.class);
-					for (ReportResp rp : reps) {
-						campaignIds.add(rp.getID_MESSAGE().toString());
-					}
-					reportWriter.writeAllResults(reps);
-				} catch (Exception ex) {
-					Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
-				}
-			}
 			/* Check if campaign ids specified */
 			if (config.getParams().getCampaignIds() != null
 					&& config.getParams().getCampaignIds().size() > 0) {
-				campaignIds = config.getParams().getCampaignIds();
+				campaignIds = new HashSet<>(config.getParams().getCampaignIds());
 			}
 
 			/* get all messages for each campaign */
-			List<String> sendIds = new ArrayList<>();
+			Set<String> sendIds = new HashSet<>();
 			int i = 0;
 			Map<String, String> keyCols = new HashMap<>();
 			boolean append = false;
