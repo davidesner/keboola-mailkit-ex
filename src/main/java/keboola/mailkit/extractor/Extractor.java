@@ -246,7 +246,6 @@ public class Extractor {
 			System.out.println("Downloading RAW data. For " + campaignIds.size() + " campaigns.");
 			/* Retrieve data using RAW functions */
 			append = true;
-			for (String cId : campaignIds) {
 
 				// RAW MESSAGES
 				if (datasetsToGet.contains(KBCParameters.REQUEST_TYPE.RAW_MESSAGES.name())) {
@@ -254,13 +253,13 @@ public class Extractor {
 
 					Long lastId;
 					if (lastState != null) {
-						lastId = lastState.getRawMessagesLastId().get(cId);
+						lastId = lastState.getRawMessagesLastId();
 					} else {
 						lastId = null;
 					}
 
 					while (hasNextData) {
-						jsonRq = new RawMessages(cId, lastId, null, null);
+						jsonRq = new RawMessages(null, lastId, null, null);
 						jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
 						if (!checkResponseStatus(jsResp, jsonRq)) {
 							System.err.println(
@@ -287,7 +286,7 @@ public class Extractor {
 						Thread.sleep(REQUEST_WAIT_INTERVAL);
 					}
 					if (lastState != null) {
-						lastState.getRawMessagesLastId().put(cId, lastId);
+						lastState.setRawMessagesLastId(lastId);
 					}
 				}
 				// RAW RESPONSES
@@ -296,13 +295,13 @@ public class Extractor {
 
 					Long lastId;
 					if (lastState != null) {
-						lastId = lastState.getRawResponsesLastId().get(cId);
+						lastId = lastState.getRawResponsesLastId();
 					} else {
 						lastId = null;
 					}
 
 					while (hasNextData) {
-						jsonRq = new RawResponses(cId, null, null, lastId, null);
+						jsonRq = new RawResponses(null, null, null, lastId, null);
 						jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
 						if (!checkResponseStatus(jsResp, jsonRq)) {
 							System.err.println(
@@ -329,7 +328,7 @@ public class Extractor {
 						Thread.sleep(REQUEST_WAIT_INTERVAL);
 					}
 					if (lastState != null) {
-						lastState.getRawResponsesLastId().put(cId, lastId);
+						lastState.setRawResponsesLastId(lastId);
 					}
 				}
 				// RAW BOUNCES
@@ -338,13 +337,13 @@ public class Extractor {
 
 					Long lastId;
 					if (lastState != null) {
-						lastId = lastState.getRawBouncesLastId().get(cId);
+						lastId = lastState.getRawBouncesLastId();
 					} else {
 						lastId = null;
 					}
 
 					while (hasNextData) {
-						jsonRq = new RawBounces(cId, null, lastId, null);
+						jsonRq = new RawBounces(null, null, lastId, null);
 						jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
 						if (!checkResponseStatus(jsResp, jsonRq)) {
 							System.err.println(
@@ -370,10 +369,10 @@ public class Extractor {
 						Thread.sleep(REQUEST_WAIT_INTERVAL);
 					}
 					if (lastState != null) {
-						lastState.getRawBouncesLastId().put(cId, lastId);
+						lastState.setRawBouncesLastId(lastId);
 					}
 				}
-			}
+			
 
 			/* Get data for all messages */
 			List<String> linkIds;

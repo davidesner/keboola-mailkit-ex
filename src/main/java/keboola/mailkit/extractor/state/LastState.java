@@ -2,13 +2,10 @@
  */
 package keboola.mailkit.extractor.state;
 
+import java.time.Instant;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
@@ -20,38 +17,24 @@ public class LastState {
     @JsonProperty("lastRunDate")
     private Instant lastRunDate;
 
-    private Map<String, Long> rawMessagesLastId;
+    private Long rawMessagesLastId;
 
-    private Map<String, Long> rawResponsesLastId;
+    private Long rawResponsesLastId;
 
-    private Map<String, Long> rawBouncesLastId;
+    private Long rawBouncesLastId;
 
     public LastState(Instant lastRunDate) {
-        this.rawMessagesLastId = new HashMap<>();
-        this.rawBouncesLastId = new HashMap<>();
-        this.rawResponsesLastId = new HashMap();
+        this.rawMessagesLastId = null;
+        this.rawBouncesLastId = null;
+        this.rawResponsesLastId = null;
         this.lastRunDate = lastRunDate;
     }
 
     @JsonCreator
-    public LastState(@JsonProperty("lastRunDate") Instant lastRunDate, @JsonProperty("rawMessagesLastId") Map<String, Long> rawMessagesLastId,
-            @JsonProperty("rawResponsesLastId") Map<String, Long> rawResponsesLastId, @JsonProperty("rawBouncesLastId") Map<String, Long> rawBouncesLastId) {
+    public LastState(@JsonProperty("lastRunDate") Instant lastRunDate, @JsonProperty("rawMessagesLastId") Long rawMessagesLastId,
+            @JsonProperty("rawResponsesLastId") Long rawResponsesLastId, @JsonProperty("rawBouncesLastId") Long rawBouncesLastId) {
         this.lastRunDate = lastRunDate;
-        if (rawMessagesLastId != null) {
-            this.rawMessagesLastId = rawMessagesLastId;
-        } else {
-            this.rawMessagesLastId = new HashMap<>();
-        }
-        if (rawResponsesLastId != null) {
-            this.rawResponsesLastId = rawResponsesLastId;
-        } else {
-            this.rawResponsesLastId = new HashMap<>();
-        }
-        if (rawBouncesLastId != null) {
-            this.rawBouncesLastId = rawBouncesLastId;
-        } else {
-            this.rawBouncesLastId = new HashMap<>();
-        }
+
     }
 
     public Instant getLastRunDate() {
@@ -62,27 +45,27 @@ public class LastState {
         this.lastRunDate = lastRunDate;
     }
 
-    public Map<String, Long> getRawMessagesLastId() {
+    public Long getRawMessagesLastId() {
         return rawMessagesLastId;
     }
 
-    public void setRawMessagesLastId(Map<String, Long> rawMessagesLastId) {
+    public void setRawMessagesLastId(Long rawMessagesLastId) {
         this.rawMessagesLastId = rawMessagesLastId;
     }
 
-    public Map<String, Long> getRawResponsesLastId() {
+    public Long getRawResponsesLastId() {
         return rawResponsesLastId;
     }
 
-    public void setRawResponsesLastId(Map<String, Long> rawResponsesLastId) {
+    public void setRawResponsesLastId(Long rawResponsesLastId) {
         this.rawResponsesLastId = rawResponsesLastId;
     }
 
-    public Map<String, Long> getRawBouncesLastId() {
+    public Long getRawBouncesLastId() {
         return rawBouncesLastId;
     }
 
-    public void setRawBouncesLastId(Map<String, Long> rawBouncesLastId) {
+    public void setRawBouncesLastId(Long rawBouncesLastId) {
         this.rawBouncesLastId = rawBouncesLastId;
     }
 
