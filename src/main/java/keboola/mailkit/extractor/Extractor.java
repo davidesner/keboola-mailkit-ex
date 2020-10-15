@@ -243,7 +243,7 @@ public class Extractor {
 						.writeAllResults(CampaignReportWrapper.Builder.build(reps, cId));
 
 			}
-			System.out.println("Downloading RAW data. For " + campaignIds.size() + " campaigns.");
+			System.out.println("Downloading RAW data.");
 			/* Retrieve data using RAW functions */
 			append = true;
 
