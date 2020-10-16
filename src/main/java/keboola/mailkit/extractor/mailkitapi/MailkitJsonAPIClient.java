@@ -36,6 +36,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.NoConnectionReuseStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
@@ -93,6 +94,7 @@ public class MailkitJsonAPIClient implements MailkitClient {
 				.setRetryHandler(getRetryHandler(MAX_RETRIES)).setServiceUnavailableRetryStrategy(
 						getServiceUnavailableRetryStrategy(MAX_RETRIES, RETRY_STATUS_CODES));
 		builder.setDefaultHeaders(headers);
+		builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
 		this.httpClient = builder.build();
 
 		this.persistFolderPath = persistFolderPath;
