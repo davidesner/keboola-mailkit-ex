@@ -56,7 +56,7 @@ public class MailkitJsonAPIClient implements MailkitClient {
 	private static final int MAX_RETRIES = 15;
 	private static final long RETRY_INTERVAL = 5000;
 	private static final int[] RETRY_STATUS_CODES = {443, 500, 501, 502, 503, 504};
-	private static final int MAX_REQ_TIMEOUT = 60;
+	private static final int MAX_REQ_TIMEOUT = -1;
 
 
 	private final CloseableHttpClient httpClient;
@@ -85,9 +85,9 @@ public class MailkitJsonAPIClient implements MailkitClient {
 		headers.add(new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"));
 		headers.add(new BasicHeader(HttpHeaders.ACCEPT, "application/json"));
 
-		RequestConfig config = RequestConfig.custom().setConnectTimeout(MAX_REQ_TIMEOUT * 1000)
-				.setConnectionRequestTimeout(MAX_REQ_TIMEOUT * 1000)
-				.setSocketTimeout(MAX_REQ_TIMEOUT * 1000).build();
+		RequestConfig config = RequestConfig.custom().setConnectTimeout(MAX_REQ_TIMEOUT)
+				.setConnectionRequestTimeout(MAX_REQ_TIMEOUT)
+				.setSocketTimeout(MAX_REQ_TIMEOUT).build();
 
 		HttpClientBuilder builder = HttpClientBuilder.create().setDefaultRequestConfig(config)
 				.setRetryHandler(getRetryHandler(MAX_RETRIES)).setServiceUnavailableRetryStrategy(
