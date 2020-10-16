@@ -93,7 +93,7 @@ public class MailkitJsonAPIClient implements MailkitClient {
 		HttpClientBuilder builder = HttpClientBuilder.create().setDefaultRequestConfig(config)
 				.setRetryHandler(getRetryHandler(MAX_RETRIES)).setServiceUnavailableRetryStrategy(
 						getServiceUnavailableRetryStrategy(MAX_RETRIES, RETRY_STATUS_CODES));
-		builder.setDefaultHeaders(headers);
+		builder.setDefaultHeaders(headers);	
 		builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
 		this.httpClient = builder.build();
 
@@ -103,7 +103,7 @@ public class MailkitJsonAPIClient implements MailkitClient {
 	  private HttpRequestRetryHandler getRetryHandler(int maxRetryCount){
 	        return (exception, executionCount, context) -> {
 
-	            logger.warning("Retrying for: " + executionCount + ". time");
+	            logger.warning(exception + " Retrying for: " + executionCount + ". time");
 
 	            if (executionCount >= maxRetryCount) {
 	                // Do not retry if over max retry count
