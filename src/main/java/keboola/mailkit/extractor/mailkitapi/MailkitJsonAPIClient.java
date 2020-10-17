@@ -54,7 +54,7 @@ public class MailkitJsonAPIClient implements MailkitClient {
 
 	private static final String ENDPOINT_URL = "https://api.mailkit.eu/json.fcgi";
 
-	private static final int MAX_RETRIES = 15;
+	private static final int MAX_RETRIES = 10;
 	private static final long RETRY_INTERVAL = 5000;
 	private static final int[] RETRY_STATUS_CODES = {443, 500, 501, 502, 503, 504};
 	private static final int MAX_REQ_TIMEOUT = -1;
@@ -104,7 +104,12 @@ public class MailkitJsonAPIClient implements MailkitClient {
 	        return (exception, executionCount, context) -> {
 
 	            logger.warning(exception + " Retrying for: " + executionCount + ". time");
-
+	            try {
+				Thread.sleep(executionCount * RETRY_INTERVAL);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 	            if (executionCount >= maxRetryCount) {
 	                // Do not retry if over max retry count
 	                return false;
@@ -172,15 +177,16 @@ public class MailkitJsonAPIClient implements MailkitClient {
 		// build request
 		HttpPost httppost = new HttpPost(ENDPOINT_URL);
 		StringEntity stringEntity = null;
+		String requestString = "";
 		try {
-
-			stringEntity = new StringEntity(req.getStringRepresentation());
+			requestString = req.getStringRepresentation();
+			stringEntity = new StringEntity(requestString);
 		} catch (Exception ex) {
 			throw new ClientException("Error parsing the request. " + ex.getLocalizedMessage());
 		}
 		httppost.setEntity(stringEntity);
 		CloseableHttpResponse response;
-		String rqString = httppost.toString() + " Request: " + stringEntity.toString();
+		String rqString = httppost.toString() + " Request: " + stringEntity.toString() + " " + requestString;
 		try {
 			response = httpClient.execute(httppost);
 		} catch (IOException ex) {
