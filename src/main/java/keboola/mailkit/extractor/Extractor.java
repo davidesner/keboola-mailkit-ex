@@ -512,7 +512,6 @@ public class Extractor {
 
 		try {
 			/* Write state file */
-
 			JsonStateWriter.writeStateFile(dataPath + File.separator + "out", lastState);
 		} catch (IOException ex) {
 			System.err.println("Unable to write state file! " + ex.getMessage());

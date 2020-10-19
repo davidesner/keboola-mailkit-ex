@@ -16,11 +16,14 @@ public class LastState {
 
     @JsonProperty("lastRunDate")
     private Instant lastRunDate;
-
+    
+    @JsonProperty("rawMessagesLastId")
     private Long rawMessagesLastId;
-
+    
+    @JsonProperty("rawResponsesLastId")
     private Long rawResponsesLastId;
-
+    
+    @JsonProperty("rawBouncesLastId")
     private Long rawBouncesLastId;
 
     public LastState(Instant lastRunDate) {
@@ -34,6 +37,9 @@ public class LastState {
     public LastState(@JsonProperty("lastRunDate") Instant lastRunDate, @JsonProperty("rawMessagesLastId") Long rawMessagesLastId,
             @JsonProperty("rawResponsesLastId") Long rawResponsesLastId, @JsonProperty("rawBouncesLastId") Long rawBouncesLastId) {
         this.lastRunDate = lastRunDate;
+        this.rawMessagesLastId = rawMessagesLastId;
+        this.rawBouncesLastId = rawBouncesLastId;
+        this.rawResponsesLastId = rawResponsesLastId;
 
     }
 
