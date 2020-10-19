@@ -257,6 +257,7 @@ public class Extractor {
 					} else {
 						lastId = null;
 					}
+					System.out.println("Downloading RAW MESSAGES data. Since ID: " + lastId);
 
 					while (hasNextData) {
 						jsonRq = new RawMessages(null, lastId, null, null);
@@ -299,6 +300,7 @@ public class Extractor {
 					} else {
 						lastId = null;
 					}
+					System.out.println("Downloading RAW RESPONSES data. Since ID: " + lastId);
 
 					while (hasNextData) {
 						jsonRq = new RawResponses(null, null, null, lastId, null);
@@ -341,6 +343,7 @@ public class Extractor {
 					} else {
 						lastId = null;
 					}
+					System.out.println("Downloading RAW BOUNCES data. Since ID: " + lastId);
 
 					while (hasNextData) {
 						jsonRq = new RawBounces(null, null, lastId, null);
