@@ -2,7 +2,6 @@ package keboola.mailkit.extractor;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -135,24 +134,6 @@ public class Extractor {
 			}
 		} else {
 			lastState = new LastState(Instant.now());
-		}
-		/* Set period from previous state */
-		if (config.getParams().isSinceLastRun()) {
-			try {
-				if (lastState.getLastRunDate() == null) {
-					lastState = new LastState(Instant.now());
-					System.out.println("Empty state file, first run?");
-					config.getParams().setDateFrom(config.getParams().getDateFrom());
-				} else {
-					config.getParams().setDateFrom(lastState.getLastRunDate());
-				}
-				config.getParams().setDateTo(Instant.now());
-			} catch (ParseException ex) {
-				System.err.println("Unable to set date from statefile!");
-			} catch (RuntimeException re) {
-				re.printStackTrace();
-				System.exit(1);
-			}
 		}
 
 		System.out.println("Initializing writers..");
