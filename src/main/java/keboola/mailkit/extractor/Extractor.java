@@ -134,7 +134,7 @@ public class Extractor {
 				System.err.println("Unable to parse state file!");
 			}
 		} else {
-			lastState = new LastState(null);
+			lastState = new LastState(Instant.now());
 		}
 		/* Set period from previous state */
 		if (config.getParams().isSinceLastRun()) {

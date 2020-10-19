@@ -94,6 +94,7 @@ public class MailkitJsonAPIClient implements MailkitClient {
 				.setRetryHandler(getRetryHandler(MAX_RETRIES)).setServiceUnavailableRetryStrategy(
 						getServiceUnavailableRetryStrategy(MAX_RETRIES, RETRY_STATUS_CODES));
 		builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
+		builder.setDefaultHeaders(headers);
 		this.httpClient = builder.build();
 
 		this.persistFolderPath = persistFolderPath;
