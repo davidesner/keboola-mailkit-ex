@@ -2,13 +2,14 @@
  */
 package keboola.mailkit.extractor.mailkitapi.requests;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Abstract class implementing MailkitRequest interface. Provides default
@@ -25,6 +26,7 @@ public abstract class MailkitJsonRequest implements MailkitRequest {
     private String client_id;
     @JsonProperty("md5")
     private String client_md5;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private final Map<String, Object> parameters;
 
     public MailkitJsonRequest(String function) {

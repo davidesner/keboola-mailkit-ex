@@ -93,7 +93,6 @@ public class MailkitJsonAPIClient implements MailkitClient {
 		HttpClientBuilder builder = HttpClientBuilder.create().setDefaultRequestConfig(config)
 				.setRetryHandler(getRetryHandler(MAX_RETRIES)).setServiceUnavailableRetryStrategy(
 						getServiceUnavailableRetryStrategy(MAX_RETRIES, RETRY_STATUS_CODES));
-		builder.setDefaultHeaders(headers);	
 		builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
 		this.httpClient = builder.build();
 
@@ -186,7 +185,7 @@ public class MailkitJsonAPIClient implements MailkitClient {
 		}
 		httppost.setEntity(stringEntity);
 		CloseableHttpResponse response;
-		String rqString = httppost.toString() + " Request: " + stringEntity.toString() + " " + requestString;
+		String rqString = httppost.toString() + " Request: " + requestString;
 		try {
 			response = httpClient.execute(httppost);
 		} catch (IOException ex) {
