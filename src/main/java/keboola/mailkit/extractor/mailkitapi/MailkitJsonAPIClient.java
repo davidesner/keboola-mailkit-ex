@@ -36,6 +36,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.NoConnectionReuseStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
@@ -53,10 +54,10 @@ public class MailkitJsonAPIClient implements MailkitClient {
 
 	private static final String ENDPOINT_URL = "https://api.mailkit.eu/json.fcgi";
 
-	private static final int MAX_RETRIES = 15;
+	private static final int MAX_RETRIES = 10;
 	private static final long RETRY_INTERVAL = 5000;
 	private static final int[] RETRY_STATUS_CODES = {443, 500, 501, 502, 503, 504};
-	private static final int MAX_REQ_TIMEOUT = 60;
+	private static final int MAX_REQ_TIMEOUT = -1;
 
 
 	private final CloseableHttpClient httpClient;
@@ -85,13 +86,14 @@ public class MailkitJsonAPIClient implements MailkitClient {
 		headers.add(new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"));
 		headers.add(new BasicHeader(HttpHeaders.ACCEPT, "application/json"));
 
-		RequestConfig config = RequestConfig.custom().setConnectTimeout(MAX_REQ_TIMEOUT * 1000)
-				.setConnectionRequestTimeout(MAX_REQ_TIMEOUT * 1000)
-				.setSocketTimeout(MAX_REQ_TIMEOUT * 1000).build();
+		RequestConfig config = RequestConfig.custom().setConnectTimeout(MAX_REQ_TIMEOUT)
+				.setConnectionRequestTimeout(MAX_REQ_TIMEOUT)
+				.setSocketTimeout(MAX_REQ_TIMEOUT).build();
 
 		HttpClientBuilder builder = HttpClientBuilder.create().setDefaultRequestConfig(config)
 				.setRetryHandler(getRetryHandler(MAX_RETRIES)).setServiceUnavailableRetryStrategy(
 						getServiceUnavailableRetryStrategy(MAX_RETRIES, RETRY_STATUS_CODES));
+		builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
 		builder.setDefaultHeaders(headers);
 		this.httpClient = builder.build();
 
@@ -101,8 +103,13 @@ public class MailkitJsonAPIClient implements MailkitClient {
 	  private HttpRequestRetryHandler getRetryHandler(int maxRetryCount){
 	        return (exception, executionCount, context) -> {
 
-	            logger.warning("Retrying for: " + executionCount + ". time");
-
+	            logger.warning(exception + " Retrying for: " + executionCount + ". time");
+	            try {
+				Thread.sleep(executionCount * RETRY_INTERVAL);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 	            if (executionCount >= maxRetryCount) {
 	                // Do not retry if over max retry count
 	                return false;
@@ -170,15 +177,16 @@ public class MailkitJsonAPIClient implements MailkitClient {
 		// build request
 		HttpPost httppost = new HttpPost(ENDPOINT_URL);
 		StringEntity stringEntity = null;
+		String requestString = "";
 		try {
-
-			stringEntity = new StringEntity(req.getStringRepresentation());
+			requestString = req.getStringRepresentation();
+			stringEntity = new StringEntity(requestString);
 		} catch (Exception ex) {
 			throw new ClientException("Error parsing the request. " + ex.getLocalizedMessage());
 		}
 		httppost.setEntity(stringEntity);
 		CloseableHttpResponse response;
-		String rqString = httppost.toString() + " Request: " + stringEntity.toString();
+		String rqString = httppost.toString() + " Request: " + requestString;
 		try {
 			response = httpClient.execute(httppost);
 		} catch (IOException ex) {

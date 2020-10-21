@@ -2,11 +2,14 @@
  */
 package keboola.mailkit.extractor.mailkitapi.requests;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  *
  * @author David Esner <esnerda at gmail.com>
  * @created 2016
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RawMessages extends MailkitJsonRequest {
 
     /**
@@ -21,7 +24,9 @@ public class RawMessages extends MailkitJsonRequest {
     public RawMessages(String idMessage, Long idSendMessage, String idSend, Integer limit) {
 
         super("mailkit.report.raw.messages");
-        addParameter("ID_message", idMessage);
+        if (idMessage != null && !idMessage.equals("")) {
+        	addParameter("ID_message", idMessage);
+        }
         if (idSend != null && !idSend.equals("")) {
             addParameter("ID_send", idSend);
         }

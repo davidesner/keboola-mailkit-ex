@@ -2,7 +2,6 @@ package keboola.mailkit.extractor;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -134,25 +133,7 @@ public class Extractor {
 				System.err.println("Unable to parse state file!");
 			}
 		} else {
-			lastState = new LastState(null);
-		}
-		/* Set period from previous state */
-		if (config.getParams().isSinceLastRun()) {
-			try {
-				if (lastState.getLastRunDate() == null) {
-					lastState = new LastState(Instant.now());
-					System.out.println("Empty state file, first run?");
-					config.getParams().setDateFrom(config.getParams().getDateFrom());
-				} else {
-					config.getParams().setDateFrom(lastState.getLastRunDate());
-				}
-				config.getParams().setDateTo(Instant.now());
-			} catch (ParseException ex) {
-				System.err.println("Unable to set date from statefile!");
-			} catch (RuntimeException re) {
-				re.printStackTrace();
-				System.exit(1);
-			}
+			lastState = new LastState(Instant.now());
 		}
 
 		System.out.println("Initializing writers..");
@@ -243,10 +224,9 @@ public class Extractor {
 						.writeAllResults(CampaignReportWrapper.Builder.build(reps, cId));
 
 			}
-			System.out.println("Downloading RAW data. For " + campaignIds.size() + " campaigns.");
+			System.out.println("Downloading RAW data.");
 			/* Retrieve data using RAW functions */
 			append = true;
-			for (String cId : campaignIds) {
 
 				// RAW MESSAGES
 				if (datasetsToGet.contains(KBCParameters.REQUEST_TYPE.RAW_MESSAGES.name())) {
@@ -254,13 +234,14 @@ public class Extractor {
 
 					Long lastId;
 					if (lastState != null) {
-						lastId = lastState.getRawMessagesLastId().get(cId);
+						lastId = lastState.getRawMessagesLastId();
 					} else {
 						lastId = null;
 					}
+					System.out.println("Downloading RAW MESSAGES data. Since ID: " + lastId);
 
 					while (hasNextData) {
-						jsonRq = new RawMessages(cId, lastId, null, null);
+						jsonRq = new RawMessages(null, lastId, null, null);
 						jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
 						if (!checkResponseStatus(jsResp, jsonRq)) {
 							System.err.println(
@@ -287,7 +268,7 @@ public class Extractor {
 						Thread.sleep(REQUEST_WAIT_INTERVAL);
 					}
 					if (lastState != null) {
-						lastState.getRawMessagesLastId().put(cId, lastId);
+						lastState.setRawMessagesLastId(lastId);
 					}
 				}
 				// RAW RESPONSES
@@ -296,13 +277,14 @@ public class Extractor {
 
 					Long lastId;
 					if (lastState != null) {
-						lastId = lastState.getRawResponsesLastId().get(cId);
+						lastId = lastState.getRawResponsesLastId();
 					} else {
 						lastId = null;
 					}
+					System.out.println("Downloading RAW RESPONSES data. Since ID: " + lastId);
 
 					while (hasNextData) {
-						jsonRq = new RawResponses(cId, null, null, lastId, null);
+						jsonRq = new RawResponses(null, null, null, lastId, null);
 						jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
 						if (!checkResponseStatus(jsResp, jsonRq)) {
 							System.err.println(
@@ -329,7 +311,7 @@ public class Extractor {
 						Thread.sleep(REQUEST_WAIT_INTERVAL);
 					}
 					if (lastState != null) {
-						lastState.getRawResponsesLastId().put(cId, lastId);
+						lastState.setRawResponsesLastId(lastId);
 					}
 				}
 				// RAW BOUNCES
@@ -338,13 +320,14 @@ public class Extractor {
 
 					Long lastId;
 					if (lastState != null) {
-						lastId = lastState.getRawBouncesLastId().get(cId);
+						lastId = lastState.getRawBouncesLastId();
 					} else {
 						lastId = null;
 					}
+					System.out.println("Downloading RAW BOUNCES data. Since ID: " + lastId);
 
 					while (hasNextData) {
-						jsonRq = new RawBounces(cId, null, lastId, null);
+						jsonRq = new RawBounces(null, null, lastId, null);
 						jsResp = (MailkitJsonResponse) jsonClient.executeRequest(jsonRq, LOG);
 						if (!checkResponseStatus(jsResp, jsonRq)) {
 							System.err.println(
@@ -370,10 +353,10 @@ public class Extractor {
 						Thread.sleep(REQUEST_WAIT_INTERVAL);
 					}
 					if (lastState != null) {
-						lastState.getRawBouncesLastId().put(cId, lastId);
+						lastState.setRawBouncesLastId(lastId);
 					}
 				}
-			}
+			
 
 			/* Get data for all messages */
 			List<String> linkIds;
@@ -510,7 +493,6 @@ public class Extractor {
 
 		try {
 			/* Write state file */
-
 			JsonStateWriter.writeStateFile(dataPath + File.separator + "out", lastState);
 		} catch (IOException ex) {
 			System.err.println("Unable to write state file! " + ex.getMessage());

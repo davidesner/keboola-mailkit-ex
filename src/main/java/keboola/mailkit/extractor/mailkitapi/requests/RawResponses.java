@@ -22,7 +22,9 @@ public class RawResponses extends MailkitJsonRequest {
     public RawResponses(String idMessage, Long idSendMessage, String idSend, Long idLog, Integer limit) {
 
         super("mailkit.report.raw.responses");
-        addParameter("ID_message", idMessage);
+        if (idMessage != null && !idMessage.equals("")) {
+        	addParameter("ID_message", idMessage);
+        }
         if (idSend != null && !idSend.equals("")) {
             addParameter("ID_send", idSend);
         }
