@@ -9,11 +9,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -83,8 +82,13 @@ public class MailkitJsonResponse implements MailkitResponse {
 			res.add(mapper.readValue(getInputStream(), type));
 			return res;
 		}
-		return mapper.readValue(getInputStream(),
-				mapper.getTypeFactory().constructCollectionType(List.class, type));
+		try {
+			return mapper.readValue(getInputStream(),
+					mapper.getTypeFactory().constructCollectionType(List.class, type));
+		} catch (JsonMappingException ex) {
+			throw new Exception("Invalid JSON response! " + this.longResponse, ex);
+
+		}
 	}
 
 	private boolean isSingleObj() {
